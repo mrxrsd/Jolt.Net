@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -83,7 +84,7 @@ namespace Jolt.Net
          *
          * @return the indicies to remove, otherwise empty List.
          */
-        public abstract IEnumerable<int> ApplyToList(JArray inputList);
+        public abstract IEnumerable<int> ApplyToList(JsonArray inputList);
 
         /**
          * Build a list of keys to remove from the input map, using the pathElement
@@ -91,6 +92,6 @@ namespace Jolt.Net
          *
          * @return the keys to remove, otherwise empty List.
          */
-        public abstract List<string> ApplyToMap(JObject inputMap);
+        public abstract List<string> ApplyToMap(JsonObject inputMap);
     }
 }

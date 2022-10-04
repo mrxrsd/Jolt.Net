@@ -15,7 +15,7 @@
 */
 
 using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net.Functions.Math
 {
@@ -45,7 +45,7 @@ namespace Jolt.Net.Functions.Math
             _longCompareFn = longCompareFn;
         }
 
-        protected override JToken ApplyList(JArray input)
+        protected override JsonNode ApplyList(JsonArray input)
         {
             if (input == null || input.Count == 0)
             {
@@ -57,15 +57,15 @@ namespace Jolt.Net.Functions.Math
 
             foreach (var arg in input)
             {
-                if (arg.Type == JTokenType.Integer)
+                if (arg.Type == JsonNodeType.Integer)
                 {
                     curLong = _longCompareFn(curLong, arg.Value<long>());
                 }
-                else if (arg.Type == JTokenType.Float)
+                else if (arg.Type == JsonNodeType.Float)
                 {
                     curDouble = _doubleCompareFn(curDouble, arg.Value<double>());
                 }
-                else if (arg.Type == JTokenType.String)
+                else if (arg.Type == JsonNodeType.String)
                 {
                     string s = arg.Value<string>();
                     if (Int64.TryParse(s, out var longVal))
@@ -129,17 +129,17 @@ namespace Jolt.Net.Functions.Math
     */
     public class Abs : SingleFunction
     {
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JTokenType.Integer)
+            if (arg.Type == JsonNodeType.Integer)
             {
                 return System.Math.Abs(arg.Value<long>());
             }
-            if (arg.Type == JTokenType.Float)
+            if (arg.Type == JsonNodeType.Float)
             {
                 return System.Math.Abs(arg.Value<double>());
             }
-            if (arg.Type == JTokenType.String)
+            if (arg.Type == JsonNodeType.String)
             {
                 string s = arg.Value<string>();
                 if (Int64.TryParse(s, out var longVal))
@@ -163,19 +163,19 @@ namespace Jolt.Net.Functions.Math
      */
     public class Avg : ListFunction
     {
-        protected override JToken ApplyList(JArray args)
+        protected override JsonNode ApplyList(JsonArray args)
         {
             double sum = 0.0;
             int count = 0;
             foreach (var arg in args)
             {
 
-                if (arg.Type == JTokenType.Integer || arg.Type == JTokenType.Float)
+                if (arg.Type == JsonNodeType.Integer || arg.Type == JsonNodeType.Float)
                 {
                     sum += arg.Value<double>();
                     ++count;
                 }
-                else if (arg.Type == JTokenType.String &&
+                else if (arg.Type == JsonNodeType.String &&
                          Double.TryParse(arg.Value<string>(), out var doubleVal))
                 {
                     sum += doubleVal;
@@ -192,17 +192,17 @@ namespace Jolt.Net.Functions.Math
 
     public class IntSum : ListFunction
     {
-        protected override JToken ApplyList(JArray args)
+        protected override JsonNode ApplyList(JsonArray args)
         {
             int sum = 0;
             foreach (var arg in args)
             {
-                if (arg.Type == JTokenType.Integer ||
-                    arg.Type == JTokenType.Float)
+                if (arg.Type == JsonNodeType.Integer ||
+                    arg.Type == JsonNodeType.Float)
                 {
                     sum += arg.Value<int>();
                 }
-                else if (arg.Type == JTokenType.String &&
+                else if (arg.Type == JsonNodeType.String &&
                          Double.TryParse(arg.Value<string>(), out var doubleVal))
                 {
                     sum += (int)doubleVal;
@@ -214,16 +214,16 @@ namespace Jolt.Net.Functions.Math
 
     public class LongSum : ListFunction
     {
-        protected override JToken ApplyList(JArray args)
+        protected override JsonNode ApplyList(JsonArray args)
         {
             long sum = 0;
             foreach (var arg in args)
             {
-                if (arg.Type == JTokenType.Integer || arg.Type == JTokenType.Float)
+                if (arg.Type == JsonNodeType.Integer || arg.Type == JsonNodeType.Float)
                 {
                     sum += arg.Value<long>();
                 }
-                else if (arg.Type == JTokenType.String &&
+                else if (arg.Type == JsonNodeType.String &&
                          Double.TryParse(arg.Value<string>(), out var doubleVal))
                 {
                     sum += (long)doubleVal;
@@ -235,16 +235,16 @@ namespace Jolt.Net.Functions.Math
 
     public class DoubleSum : ListFunction
     {
-        protected override JToken ApplyList(JArray args)
+        protected override JsonNode ApplyList(JsonArray args)
         {
             double sum = 0;
             foreach (var arg in args)
             {
-                if (arg.Type == JTokenType.Integer || arg.Type == JTokenType.Float)
+                if (arg.Type == JsonNodeType.Integer || arg.Type == JsonNodeType.Float)
                 {
                     sum += arg.Value<double>();
                 }
-                else if (arg.Type == JTokenType.String &&
+                else if (arg.Type == JsonNodeType.String &&
                          Double.TryParse(arg.Value<string>(), out var intVal))
                 {
                     sum += intVal;
@@ -256,11 +256,11 @@ namespace Jolt.Net.Functions.Math
 
     public class IntSubtract : ListFunction
     {
-        protected override JToken ApplyList(JArray args)
+        protected override JsonNode ApplyList(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                args[0].Type != JTokenType.Integer ||
-                args[1].Type != JTokenType.Integer)
+                args[0].Type != JsonNodeType.Integer ||
+                args[1].Type != JsonNodeType.Integer)
             {
                 return null;
             }
@@ -270,11 +270,11 @@ namespace Jolt.Net.Functions.Math
 
     public class LongSubtract : ListFunction
     {
-        protected override JToken ApplyList(JArray args)
+        protected override JsonNode ApplyList(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                args[0].Type != JTokenType.Integer ||
-                args[1].Type != JTokenType.Integer)
+                args[0].Type != JsonNodeType.Integer ||
+                args[1].Type != JsonNodeType.Integer)
             {
                 return null;
             }
@@ -284,11 +284,11 @@ namespace Jolt.Net.Functions.Math
 
     public class DoubleSubtract : ListFunction
     {
-        protected override JToken ApplyList(JArray args)
+        protected override JsonNode ApplyList(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                args[0].Type != JTokenType.Float ||
-                args[1].Type != JTokenType.Float)
+                args[0].Type != JsonNodeType.Float ||
+                args[1].Type != JsonNodeType.Float)
             {
                 return null;
             }
@@ -298,11 +298,11 @@ namespace Jolt.Net.Functions.Math
 
     public class Divide : ListFunction
     {
-        public static JToken DividePair(JArray args)
+        public static JsonNode DividePair(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                (args[0].Type != JTokenType.Integer && args[0].Type != JTokenType.Float) ||
-                (args[1].Type != JTokenType.Integer && args[1].Type != JTokenType.Float))
+                (args[0].Type != JsonNodeType.Integer && args[0].Type != JsonNodeType.Float) ||
+                (args[1].Type != JsonNodeType.Integer && args[1].Type != JsonNodeType.Float))
             {
                 return null;
             }
@@ -316,15 +316,15 @@ namespace Jolt.Net.Functions.Math
             return numerator / denominator;
         }
 
-        protected override JToken ApplyList(JArray args) =>
+        protected override JsonNode ApplyList(JsonArray args) =>
             Divide.DividePair(args);
     }
 
     public class DivideAndRound : ArgDrivenIntListFunction
     {
-        protected override JToken ApplyList(int specialArg, JArray args)
+        protected override JsonNode ApplyList(int specialArg, JsonArray args)
         {
-            JToken result = Divide.DividePair(args);
+            JsonNode result = Divide.DividePair(args);
             if (result != null)
             {
                 return System.Math.Round(result.Value<double>(), specialArg, MidpointRounding.AwayFromZero);

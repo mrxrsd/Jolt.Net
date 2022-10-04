@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -70,7 +71,7 @@ namespace Jolt.Net
          * @param tree tree of Map and List JSON structure to navigate
          * @return the object you wanted, or null if the object or any step along the path to it were not there
          */
-        public JToken Get(JToken tree)
+        public JsonNode Get(JsonNode tree)
         {
             return _traversr.Get(tree, _keys);
         }
@@ -80,7 +81,7 @@ namespace Jolt.Net
          * @param data JSON style data object you want to set
          * @return returns the data object if successfully set, otherwise null if there was a problem walking the path
          */
-        public JToken Set(JToken tree, JToken data)
+        public JsonNode Set(JsonNode tree, JsonNode data)
         {
             return _traversr.Set(tree, _keys, data);
         }
@@ -89,7 +90,7 @@ namespace Jolt.Net
          * @param tree tree of Map and List JSON structure to navigate
          * @return removes and returns the data object if it was able to successfully navigate to it and remove it.
          */
-        public JToken Remove(JToken tree)
+        public JsonNode Remove(JsonNode tree)
         {
             return _traversr.Remove(tree, _keys);
         }

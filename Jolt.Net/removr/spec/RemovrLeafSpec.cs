@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -36,7 +37,7 @@ namespace Jolt.Net
          *
          * @param inputMap : Input map from which the spec key needs to be removed.
          */
-        public override List<string> ApplyToMap(JObject inputMap)
+        public override List<string> ApplyToMap(JsonObject inputMap)
         {
             if (inputMap == null)
             {
@@ -72,7 +73,7 @@ namespace Jolt.Net
         /**
          * @param inputList : Input List from which the spec key needs to be removed.
          */
-        public override IEnumerable<int> ApplyToList(JArray inputList)
+        public override IEnumerable<int> ApplyToList(JsonArray inputList)
         {
             if (inputList == null)
             {

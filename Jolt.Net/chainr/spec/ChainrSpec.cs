@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -46,9 +47,9 @@ namespace Jolt.Net
         /**
          * @param chainrSpec Plain vanilla hydrated JSON representation of a Chainr spec .json file.
          */
-        public ChainrSpec(JToken chainrSpec, IReadOnlyDictionary<string, Type> transforms)
+        public ChainrSpec(JsonNode chainrSpec, IReadOnlyDictionary<string, Type> transforms)
         {
-            if (!(chainrSpec is JArray operations))
+            if (!(chainrSpec is JsonArray operations))
             {
                 throw new SpecException("JOLT Chainr expects a JSON array of objects - Malformed spec.");
             }

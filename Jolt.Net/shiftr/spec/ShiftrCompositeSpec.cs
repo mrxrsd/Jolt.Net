@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -64,7 +65,7 @@ namespace Jolt.Net
         private readonly IReadOnlyList<ShiftrSpec> _computedChildren;        // children that are regex matches against the input data
         private readonly ExecutionStrategy _executionStrategy;
 
-        public ShiftrCompositeSpec(string rawKey, JObject spec) :
+        public ShiftrCompositeSpec(string rawKey, JsonObject spec) :
             base(rawKey)
         {
             var special = new List<ShiftrSpec>();
@@ -169,7 +170,7 @@ namespace Jolt.Net
          *
          * @return true if this this spec "handles" the inputKey such that no sibling specs need to see it
          */
-        public override bool Apply(string inputKey, JToken inputOptional, WalkedPath walkedPath, JObject output, JObject context)
+        public override bool Apply(string inputKey, JsonNode inputOptional, WalkedPath walkedPath, JsonObject output, JsonObject context)
         {
             MatchedElement thisLevel = _pathElement.Match(inputKey, walkedPath);
             if (thisLevel == null)

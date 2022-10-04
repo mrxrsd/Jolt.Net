@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
     public class ShiftrSpecBuilder : SpecBuilder<ShiftrSpec>
     {
-        public override ShiftrSpec CreateSpec(string keyString, JToken rawRhs)
+        public override ShiftrSpec CreateSpec(string keyString, JsonNode rawRhs)
         {
-            if (rawRhs is JObject map) 
+            if (rawRhs is JsonObject map) 
             {
                 return new ShiftrCompositeSpec(keyString, map);
             }

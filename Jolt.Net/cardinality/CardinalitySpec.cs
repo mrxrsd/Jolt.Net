@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -105,9 +106,9 @@ namespace Jolt.Net
          *
          * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
          */
-        public abstract bool ApplyCardinality(string inputKey, JToken input, WalkedPath walkedPath, JToken parentContainer);
+        public abstract bool ApplyCardinality(string inputKey, JsonNode input, WalkedPath walkedPath, JsonNode parentContainer);
 
-        public bool Apply(string inputKey, JToken inputOptional, WalkedPath walkedPath, JObject output, JObject context)
+        public bool Apply(string inputKey, JsonNode inputOptional, WalkedPath walkedPath, JsonObject output, JsonObject context)
         {
             return ApplyCardinality(inputKey, inputOptional, walkedPath, output);
         }

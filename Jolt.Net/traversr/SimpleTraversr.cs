@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -37,7 +38,7 @@ namespace Jolt.Net
         {
         }
 
-        public override JToken HandleFinalSet(ITraversalStep traversalStep, JToken tree, string key, JToken data)
+        public override JsonNode HandleFinalSet(ITraversalStep traversalStep, JsonNode tree, string key, JsonNode data)
         {
             return traversalStep.OverwriteSet(tree, key, data);
         }
@@ -45,11 +46,11 @@ namespace Jolt.Net
         /**
          * Only make a new instance of a container object for SET, if there is nothing "there".
          */
-        public override JToken HandleIntermediateGet(ITraversalStep traversalStep, JToken tree, string key, TraversalStepOperation op)
+        public override JsonNode HandleIntermediateGet(ITraversalStep traversalStep, JsonNode tree, string key, TraversalStepOperation op)
         {
             var sub = traversalStep.Get(tree, key);
 
-            if ((sub == null || sub.Type == JTokenType.Null) && op == TraversalStepOperation.SET)
+            if ((sub == null || sub.Type == JsonNodeType.Null) && op == TraversalStepOperation.SET)
             {
                 // get our child to make the container object, so it will be happy with it
                 sub = traversalStep.GetChild().NewContainer();

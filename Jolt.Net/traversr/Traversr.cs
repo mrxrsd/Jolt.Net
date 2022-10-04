@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -116,7 +117,7 @@ namespace Jolt.Net
          *  for the traversal.  This is determined by the behavior of the implementations of the
          *  abstract methods of this class.
          */
-        public JToken Get(JToken tree, IList<string> keys)
+        public JsonNode Get(JsonNode tree, IList<string> keys)
         {
             if (keys.Count != _traversaLength)
             {
@@ -131,7 +132,7 @@ namespace Jolt.Net
          * @param data JSON style data object you want to set
          * @return returns the data object if successfully set, otherwise null if there was a problem walking the path
          */
-        public JToken Set(JToken tree, IList<string> keys, JToken data)
+        public JsonNode Set(JsonNode tree, IList<string> keys, JsonNode data)
         {
             if (keys.Count != _traversaLength)
             {
@@ -158,7 +159,7 @@ namespace Jolt.Net
          *  for the traversal.  This is determined by the behavior of the implementations of the
          *  abstract methods of this class.
          */
-        public JToken Remove(JToken tree, IList<string> keys)
+        public JsonNode Remove(JsonNode tree, IList<string> keys)
         {
             if (keys.Count != _traversaLength)
             {
@@ -184,7 +185,7 @@ namespace Jolt.Net
          *
          * @return the data object if the set was successful, or null if not
          */
-        public abstract JToken HandleFinalSet(ITraversalStep traversalStep, JToken tree, string key, JToken data);
+        public abstract JsonNode HandleFinalSet(ITraversalStep traversalStep, JsonNode tree, string key, JsonNode data);
 
         /**
          * Allow subclasses to control how gets are handled for intermediate traversals.
@@ -195,6 +196,6 @@ namespace Jolt.Net
          *
          * Overwrite or just return?
          */
-        public abstract JToken HandleIntermediateGet(ITraversalStep traversalStep, JToken tree, string key, TraversalStepOperation op);
+        public abstract JsonNode HandleIntermediateGet(ITraversalStep traversalStep, JsonNode tree, string key, TraversalStepOperation op);
     }
 }

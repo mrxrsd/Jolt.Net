@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -51,14 +52,14 @@ namespace Jolt.Net
          *
          * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
          */
-        public override bool ApplyCardinality(string inputKey, JToken input, WalkedPath walkedPath, JToken parentContainer)
+        public override bool ApplyCardinality(string inputKey, JsonNode input, WalkedPath walkedPath, JsonNode parentContainer)
         {
             MatchedElement thisLevel = GetMatch(inputKey, walkedPath);
             if (thisLevel == null)
             {
                 return false;
             }
-            PerformCardinalityAdjustment(inputKey, input, walkedPath, (JObject) parentContainer, thisLevel);
+            PerformCardinalityAdjustment(inputKey, input, walkedPath, (JsonObject) parentContainer, thisLevel);
             return true;
         }
 
@@ -67,51 +68,51 @@ namespace Jolt.Net
          *
          * @return null if no work was done, otherwise returns the re-parented data
          */
-        public JToken ApplyToParentContainer(string inputKey, JToken input, WalkedPath walkedPath, JToken parentContainer)
+        public JsonNode ApplyToParentContainer(string inputKey, JsonNode input, WalkedPath walkedPath, JsonNode parentContainer)
         {
             MatchedElement thisLevel = GetMatch(inputKey, walkedPath);
             if (thisLevel == null)
             {
                 return null;
             }
-            return PerformCardinalityAdjustment(inputKey, input, walkedPath, (JObject) parentContainer, thisLevel);
+            return PerformCardinalityAdjustment(inputKey, input, walkedPath, (JsonObject) parentContainer, thisLevel);
         }
 
         /**
          *
          * @return null if no work was done, otherwise returns the re-parented data
          */
-        private JToken PerformCardinalityAdjustment(string inputKey, JToken input, WalkedPath walkedPath, JObject parentContainer, MatchedElement thisLevel)
+        private JsonNode PerformCardinalityAdjustment(string inputKey, JsonNode input, WalkedPath walkedPath, JsonObject parentContainer, MatchedElement thisLevel)
         {
             // Add our the LiteralPathElement for this level, so that write path References can use it as &(0,0)
             walkedPath.Add(input, thisLevel);
 
-            JToken returnValue = null;
+            JsonNode returnValue = null;
             if (_cardinalityRelationship == CardinalityRelationship.MANY)
             {
-                if (input is JArray)
+                if (input is JsonArray)
                 {
                     returnValue = input;
                 }
-                else if (input.Type == JTokenType.Object || input.Type == JTokenType.String || 
-                         input.Type == JTokenType.Integer || input.Type == JTokenType.Float || 
-                         input.Type == JTokenType.Boolean)
+                else if (input.Type == JsonNodeType.Object || input.Type == JsonNodeType.String || 
+                         input.Type == JsonNodeType.Integer || input.Type == JsonNodeType.Float || 
+                         input.Type == JsonNodeType.Boolean)
                 {
                     var one = parentContainer[inputKey];
                     parentContainer.Remove(inputKey);
-                    var tempList = new JArray();
+                    var tempList = new JsonArray();
                     tempList.Add(one);
                     returnValue = tempList;
                 }
-                else if (input.Type == JTokenType.Null)
+                else if (input.Type == JsonNodeType.Null)
                 {
-                    returnValue = new JArray();
+                    returnValue = new JsonArray();
                 }
                 parentContainer[inputKey] = returnValue;
             }
             else if (_cardinalityRelationship == CardinalityRelationship.ONE)
             {
-                if (input is JArray l)
+                if (input is JsonArray l)
                 {
                     // The value is first removed from the array in order to prevent it
                     // from being cloned (JContainers clone their inputs if they are already

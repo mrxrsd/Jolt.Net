@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -59,19 +60,19 @@ namespace Jolt.Net
         /**
          * Determines if an input is compatible with current DataType
          */
-        public abstract bool IsCompatible(JToken input);
+        public abstract bool IsCompatible(JsonNode input);
 
         /**
          * MAP and LIST types overrides this method to return appropriate new map or list
          */
-        protected abstract JToken CreateValue();
+        protected abstract JsonNode CreateValue();
 
         /**
          * LIST overrides this method to expand the source (list) such that in can support
          * an index specified in spec that is outside the range input list, returns original size
          * of the input
          */
-        public virtual int? Expand(JToken source)
+        public virtual int? Expand(JsonNode source)
         {
             throw new InvalidOperationException("Expand not supported in " + GetType().Name + " Type");
         }
@@ -84,7 +85,7 @@ namespace Jolt.Net
          * @param opMode     to determine if this write operation is allowed
          * @return newly created object
          */
-        public JToken Create(string keyOrIndex, WalkedPath walkedPath, OpMode opMode)
+        public JsonNode Create(string keyOrIndex, WalkedPath walkedPath, OpMode opMode)
         {
             object parent = walkedPath.LastElement().TreeRef;
             int? origSizeOptional = walkedPath.LastElement().OrigSize;
@@ -92,12 +93,12 @@ namespace Jolt.Net
             {
                 index = -1;
             }
-            JToken value = null;
-            if (parent is JObject map && opMode.IsApplicable(map, keyOrIndex))
+            JsonNode value = null;
+            if (parent is JsonObject map && opMode.IsApplicable(map, keyOrIndex))
             {
                 map[keyOrIndex] = value = CreateValue();
             }
-            else if (parent is JArray list && opMode.IsApplicable(list, index, origSizeOptional.Value))
+            else if (parent is JsonArray list && opMode.IsApplicable(list, index, origSizeOptional.Value))
             {
                 list[index] = value = CreateValue();
             }
@@ -117,11 +118,11 @@ namespace Jolt.Net
             _maxIndexFromSpec = maxIndexFromSpec;
         }
 
-        protected override JToken CreateValue() => new JArray();
+        protected override JsonNode CreateValue() => new JsonArray();
 
-        public override int? Expand(JToken input)
+        public override int? Expand(JsonNode input)
         {
-            var source = (JArray)input;
+            var source = (JsonArray)input;
             int reqIndex = _maxIndexFromSpec;
             int currLastIndex = source.Count - 1;
             int origSize = currLastIndex + 1;
@@ -135,9 +136,9 @@ namespace Jolt.Net
             return origSize;
         }
 
-        public override bool IsCompatible(JToken input)
+        public override bool IsCompatible(JsonNode input)
         {
-            return input == null || input.Type == JTokenType.Null || input is JArray;
+            return input == null || input.Type == JsonNodeType.Null || input is JsonArray;
         }
     }
 
@@ -146,10 +147,10 @@ namespace Jolt.Net
      */
     public class MAP : DataType
     {
-        protected override JToken CreateValue() => new JObject();
+        protected override JsonNode CreateValue() => new JsonObject();
 
-        public override bool IsCompatible(JToken input) =>
-            input == null || input.Type == JTokenType.Null || input is JObject;
+        public override bool IsCompatible(JsonNode input) =>
+            input == null || input.Type == JsonNodeType.Null || input is JsonObject;
     }
 
     /**
@@ -157,9 +158,9 @@ namespace Jolt.Net
      */
     public class RUNTIME : DataType
     {
-        public override bool IsCompatible(JToken input) =>
-            input != null && input.Type != JTokenType.Null;
-        protected override JToken CreateValue() =>
+        public override bool IsCompatible(JsonNode input) =>
+            input != null && input.Type != JsonNodeType.Null;
+        protected override JsonNode CreateValue() =>
             throw new InvalidOperationException("Cannot create for RUNTIME Type");
     }
 }

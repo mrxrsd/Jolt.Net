@@ -16,21 +16,22 @@
 
 using System;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+
+
 
 namespace Jolt.Net.Functions.Objects
 {
     public class ToInteger : SingleFunction
     {
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JTokenType.Integer ||
-                arg.Type == JTokenType.Float)
+            if (arg.Type == JsonNodeType.Integer ||
+                arg.Type == JsonNodeType.Float)
             {
                 return arg.Value<int>();
             }
-            if (arg.Type == JTokenType.String &&
+            if (arg.Type == JsonNodeType.String &&
                 Int32.TryParse(arg.Value<string>(), out var intVal))
             {
                 return intVal;
@@ -41,14 +42,14 @@ namespace Jolt.Net.Functions.Objects
 
     public class ToLong : SingleFunction
     {
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JTokenType.Integer ||
-                arg.Type == JTokenType.Float)
+            if (arg.Type == JsonNodeType.Integer ||
+                arg.Type == JsonNodeType.Float)
             {
                 return arg.Value<long>();
             }
-            if (arg.Type == JTokenType.String &&
+            if (arg.Type == JsonNodeType.String &&
                 Int64.TryParse(arg.Value<string>(), out var longVal))
             {
                 return longVal;
@@ -59,14 +60,14 @@ namespace Jolt.Net.Functions.Objects
 
     public class ToDouble : SingleFunction
     {
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JTokenType.Integer ||
-                arg.Type == JTokenType.Float)
+            if (arg.Type == JsonNodeType.Integer ||
+                arg.Type == JsonNodeType.Float)
             {
                 return arg.Value<double>();
             }
-            if (arg.Type == JTokenType.String &&
+            if (arg.Type == JsonNodeType.String &&
                 Double.TryParse(arg.Value<string>(), out var doubleVal))
             {
                 return doubleVal;
@@ -77,13 +78,13 @@ namespace Jolt.Net.Functions.Objects
 
     public class ToBoolean : SingleFunction
     {
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JTokenType.Boolean)
+            if (arg.Type == JsonNodeType.Boolean)
             {
                 return arg;
             }
-            if (arg.Type == JTokenType.String)
+            if (arg.Type == JsonNodeType.String)
             {
                 string s = arg.Value<string>();
                 if (s.Equals("true", StringComparison.OrdinalIgnoreCase))
@@ -101,17 +102,17 @@ namespace Jolt.Net.Functions.Objects
 
     public class ToString : SingleFunction
     {
-        private string TokenToString(JToken arg)
+        private string TokenToString(JsonNode arg)
         {
-            if (arg.Type == JTokenType.String)
+            if (arg.Type == JsonNodeType.String)
             {
                 return arg.Value<string>();
             }
-            if (arg.Type == JTokenType.Array)
+            if (arg.Type == JsonNodeType.Array)
             {
                 var sb = new StringBuilder();
                 sb.Append("[");
-                foreach (var elt in (JArray)arg)
+                foreach (var elt in (JsonArray)arg)
                 {
                     sb.Append(TokenToString(elt));
                 }
@@ -121,9 +122,9 @@ namespace Jolt.Net.Functions.Objects
             return arg.ToString();
         }
 
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JTokenType.String)
+            if (arg.Type == JsonNodeType.String)
             {
                 return arg;
             }
@@ -133,9 +134,9 @@ namespace Jolt.Net.Functions.Objects
 
     public abstract class SquashFunction : IFunction
     {
-        protected abstract JToken DoSquash(JToken arg);
+        protected abstract JsonNode DoSquash(JsonNode arg);
 
-        public JToken Apply(params JToken[] args)
+        public JsonNode Apply(params JsonNode[] args)
         {
             if (args.Length == 0)
             {
@@ -145,7 +146,7 @@ namespace Jolt.Net.Functions.Objects
             {
                 return DoSquash(args[0]);
             }
-            var arr = new JArray();
+            var arr = new JsonArray();
             foreach (var arg in args)
             {
                 arr.Add(arg);
@@ -156,26 +157,26 @@ namespace Jolt.Net.Functions.Objects
 
     public class SquashNulls : SquashFunction
     {
-        public static JToken Squash(JToken arg)
+        public static JsonNode Squash(JsonNode arg)
         {
-            if (arg.Type == JTokenType.Array)
+            if (arg.Type == JsonNodeType.Array)
             {
-                var arr = (JArray)arg;
+                var arr = (JsonArray)arg;
                 for (int i = 0; i < arr.Count;)
                 {
-                    if (arr[i].Type == JTokenType.Null)
+                    if (arr[i].Type == JsonNodeType.Null)
                         arr.RemoveAt(i);
                     else
                         ++i;
                 }
             }
-            else if (arg.Type == JTokenType.Object)
+            else if (arg.Type == JsonNodeType.Object)
             {
-                var obj = (JObject)arg;
-                var newObj = new JObject();
+                var obj = (JsonObject)arg;
+                var newObj = new JsonObject();
                 foreach (var kv in obj)
                 {
-                    if (kv.Value.Type != JTokenType.Null)
+                    if (kv.Value.Type != JsonNodeType.Null)
                     {
                         newObj.Add(kv.Key, kv.Value);
                     }
@@ -185,28 +186,28 @@ namespace Jolt.Net.Functions.Objects
             return arg;
         }
 
-        protected override JToken DoSquash(JToken arg) =>
+        protected override JsonNode DoSquash(JsonNode arg) =>
             Squash(arg);
     }
 
     public class RecursivelySquashNulls : SquashFunction
     {
-        public static JToken Squash(JToken arg)
+        public static JsonNode Squash(JsonNode arg)
         {
             // Makes two passes thru the data.
             arg = SquashNulls.Squash(arg);
 
-            if (arg.Type == JTokenType.Array)
+            if (arg.Type == JsonNodeType.Array)
             {
-                var arr = (JArray)arg;
+                var arr = (JsonArray)arg;
                 for (int i = 0; i < arr.Count; ++i)
                 {
                     arr[i] = Squash(arr[i]);
                 }
             }
-            else if (arg.Type == JTokenType.Object)
+            else if (arg.Type == JsonNodeType.Object)
             {
-                var obj = (JObject)arg;
+                var obj = (JsonObject)arg;
                 foreach (var kv in obj)
                 {
                     obj[kv.Key] = Squash(kv.Value);
@@ -215,7 +216,7 @@ namespace Jolt.Net.Functions.Objects
             return arg;
         }
 
-        protected override JToken DoSquash(JToken arg) =>
+        protected override JsonNode DoSquash(JsonNode arg) =>
             Squash(arg);
     }
 
@@ -224,7 +225,7 @@ namespace Jolt.Net.Functions.Objects
      */
     public class Size : IFunction
     {
-        public JToken Apply(params JToken[] args)
+        public JsonNode Apply(params JsonNode[] args)
         {
             if (args == null || args.Length == 0)
             {
@@ -237,17 +238,17 @@ namespace Jolt.Net.Functions.Objects
                 {
                     return null;
                 }
-                if (args[0].Type == JTokenType.Array)
+                if (args[0].Type == JsonNodeType.Array)
                 {
-                    return ((JArray)args[0]).Count;
+                    return ((JsonArray)args[0]).Count;
                 }
-                if (args[0].Type == JTokenType.String)
+                if (args[0].Type == JsonNodeType.String)
                 {
                     return args[0].ToString().Length;
                 }
-                if (args[0].Type == JTokenType.Object)
+                if (args[0].Type == JsonNodeType.Object)
                 {
-                    return ((JObject)args[0]).Count;
+                    return ((JsonObject)args[0]).Count;
                 }
                 return null;
             }

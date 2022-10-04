@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
 namespace Jolt.Net
 {
     interface IValueFiltr
     {
-        bool Match(JToken value);
+        bool Match(JsonNode value);
     }
 
     class RegexFiltr : IValueFiltr
@@ -20,20 +21,20 @@ namespace Jolt.Net
             _regex = new Regex(re);
         }
 
-        public bool Match(JToken value) =>
+        public bool Match(JsonNode value) =>
             _regex.IsMatch(value.Value<string>());
     }
 
     class ValueFiltr : IValueFiltr
     {
-        private readonly JToken _value;
+        private readonly JsonNode _value;
 
-        public ValueFiltr(JToken value)
+        public ValueFiltr(JsonNode value)
         {
             _value = value;
         }
 
-        public bool Match(JToken value) =>
+        public bool Match(JsonNode value) =>
             value.Equals(_value);
     }
 
@@ -41,18 +42,18 @@ namespace Jolt.Net
     {
         private readonly IReadOnlyList<KeyValuePair<string, IValueFiltr>> _filters;
 
-        public FiltrLeafSpec(IReadOnlyList<KeyValuePair<string, JToken>> filters)
+        public FiltrLeafSpec(IReadOnlyList<KeyValuePair<string, JsonNode>> filters)
         {
             _filters = filters.Select(x =>
                 new KeyValuePair<string, IValueFiltr>(x.Key,
-                    x.Value.Type == JTokenType.String ? (IValueFiltr)
+                    x.Value.Type == JsonNodeType.String ? (IValueFiltr)
                         new RegexFiltr(x.Value.Value<string>()) :
                         new ValueFiltr(x.Value))).ToList().AsReadOnly();
         }
 
-        public bool Matches(JToken input)
+        public bool Matches(JsonNode input)
         {
-            if (input is JArray arr)
+            if (input is JsonArray arr)
             {
                 foreach (var filter in _filters)
                 {
@@ -66,7 +67,7 @@ namespace Jolt.Net
                     }
                 }
             }
-            else if (input is JObject obj)
+            else if (input is JsonObject obj)
             {
                 foreach (var filter in _filters)
                 {

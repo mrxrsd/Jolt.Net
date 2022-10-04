@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
 namespace Jolt.Net
@@ -28,7 +29,7 @@ namespace Jolt.Net
          * @param spec Simple Jackson default Map<string,object> input
          * @return Set of Keys from this level in the spec
          */
-        public static HashSet<Key> ParseSpec(JObject spec )
+        public static HashSet<Key> ParseSpec(JsonObject spec )
         {
             return ProcessSpec( false, spec );
         }
@@ -37,7 +38,7 @@ namespace Jolt.Net
          * Recursively walk the spec input tree.  Handle arrays by telling DefaultrKeys if they need to be ArrayKeys, and
          *  to find the max default array.Length.
          */
-        private static HashSet<Key> ProcessSpec(bool parentIsArray, JObject spec)
+        private static HashSet<Key> ProcessSpec(bool parentIsArray, JsonObject spec)
         {
             // TODO switch to List<Key> and sort before returning
             var result = new HashSet<Key>();
@@ -70,12 +71,12 @@ namespace Jolt.Net
         private int _outputArraySize = -1;
 
         protected HashSet<Key> _children = null;
-        protected JToken _literalValue = null;
+        protected JsonNode _literalValue = null;
 
         protected string _rawKey;
         protected List<string> _keyStrings;
 
-        public Key(string rawJsonKey, JToken spec)
+        public Key(string rawJsonKey, JsonNode spec)
         {
             _rawKey = rawJsonKey;
             if (rawJsonKey.EndsWith(Defaultr.WildCards.ARRAY))
@@ -104,9 +105,9 @@ namespace Jolt.Net
             }
 
             // Spec is string -> Map   or   string -> Literal only
-            if (spec.Type == JTokenType.Object)
+            if (spec.Type == JsonNodeType.Object)
             {
-                _children = ProcessSpec(IsArrayOutput(), (JObject)spec);
+                _children = ProcessSpec(IsArrayOutput(), (JsonObject)spec);
 
                 if (IsArrayOutput())
                 {
@@ -133,7 +134,7 @@ namespace Jolt.Net
          *  the defaultee wasn't null, it was null and we created it, OR there was
          *  a mismatch between the Defaultr Spec and the input, and we didn't recurse.
          */
-        public void ApplyChildren(JToken defaultee)
+        public void ApplyChildren(JsonNode defaultee)
         {
             if ( defaultee == null ) 
             {
@@ -143,7 +144,7 @@ namespace Jolt.Net
 
             // This has nothing to do with this being an ArrayKey or MapKey, instead this is about
             //  this key being the parent of an Array in the output.
-            if (IsArrayOutput() && defaultee is JArray defaultList)
+            if (IsArrayOutput() && defaultee is JsonArray defaultList)
             {
                 // Extend the defaultee list if needed
                 for ( int index = defaultList.Count - 1; index < GetOutputArraySize(); index++ )
@@ -170,7 +171,7 @@ namespace Jolt.Net
          *
          * If this Key is a WildCard key, this may apply to many entries in the container.
          */
-        protected abstract void ApplyChild(JToken container);
+        protected abstract void ApplyChild(JsonNode container);
 
         public int GetOrCount() => _orCount;
 
@@ -180,15 +181,15 @@ namespace Jolt.Net
 
         public int GetOutputArraySize() => _outputArraySize;
 
-        public JToken CreateOutputContainerObject()
+        public JsonNode CreateOutputContainerObject()
         {
             if ( IsArrayOutput() )
             {
-                return new JArray();
+                return new JsonArray();
             }
             else
             {
-                return new JObject();
+                return new JsonObject();
             }
         }
 

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -32,7 +33,7 @@ namespace Jolt.Net
         /**
          * Recursively walk the spec input tree.
          */
-        public List<T> CreateSpec(JObject rawSpec)
+        public List<T> CreateSpec(JsonObject rawSpec)
         {
             var result = new List<T>();
             var actualKeys = new HashSet<string>();
@@ -66,6 +67,6 @@ namespace Jolt.Net
          * @param rhsSpec rhs Spec
          * @return Spec object
          */
-        public abstract T CreateSpec(string lhsKey, JToken rhsSpec);
+        public abstract T CreateSpec(string lhsKey, JsonNode rhsSpec);
     }
 }

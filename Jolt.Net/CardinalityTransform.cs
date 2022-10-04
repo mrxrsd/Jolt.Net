@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -200,13 +201,13 @@ namespace Jolt.Net
          *
          * @throws com.bazaarvoice.jolt.exception.SpecException for a malformed spec
          */
-        public CardinalityTransform(JToken spec)
+        public CardinalityTransform(JsonNode spec)
         {
             if (spec == null)
             {
                 throw new SpecException("CardinalityTransform expected a spec of Map type, got 'null'.");
             }
-            if (!(spec is JObject dic))
+            if (!(spec is JsonObject dic))
             {
                 throw new SpecException("CardinalityTransform expected a spec of Map type, got " + spec.GetType().Name);
             }
@@ -222,7 +223,7 @@ namespace Jolt.Net
          * @throws com.bazaarvoice.jolt.exception.TransformException for a malformed spec or if there are issues during
          * the transform
          */
-        public JToken Transform(JToken input)
+        public JsonNode Transform(JsonNode input)
         {
             _rootSpec.Apply(ROOT_KEY, input, new WalkedPath(), null, null);
 

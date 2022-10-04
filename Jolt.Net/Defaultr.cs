@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -182,7 +183,7 @@ namespace Jolt.Net
          *
          * @throws SpecException for a malformed spec or if there are issues
          */
-        public Defaultr(JToken spec)
+        public Defaultr(JsonNode spec)
         {
             string rootString = "root";
 
@@ -191,7 +192,7 @@ namespace Jolt.Net
             //   is a map, and the other where the root of the input is an array.
             // TODO : Handle arrays better, maybe by having a parent reference in the keys, or ditch the feature of having input that is at top level an array
             {
-                var rootSpec = new JObject();
+                var rootSpec = new JsonObject();
                 // Map<string, object> rootSpec = new LinkedHashMap<>();
                 rootSpec.Add(rootString, spec);
                 _mapRoot = Key.ParseSpec(rootSpec).First();
@@ -199,7 +200,7 @@ namespace Jolt.Net
 
             //  Thus we check the top level type of the input.
             {
-                var rootSpec = new JObject();
+                var rootSpec = new JsonObject();
                 rootSpec.Add(rootString + WildCards.ARRAY, spec);
                 Key tempKey = null;
                 try
@@ -221,16 +222,16 @@ namespace Jolt.Net
          * @param input JSON object to have defaults applied to. This will be modified.
          * @return the modified input
          */
-        public JToken Transform(JToken input)
+        public JsonNode Transform(JsonNode input)
         {
             if (input == null)
             {
                 // if null, assume HashMap
-                input = new JObject();
+                input = new JsonObject();
             }
 
             // TODO : Make copy of the defaultee or like shiftr create a new output object
-            if (input.Type == JTokenType.Array)
+            if (input.Type == JsonNodeType.Array)
             {
                 if (_arrayRoot == null)
                 {

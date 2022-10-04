@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -20,7 +21,7 @@ namespace Jolt.Net
             PathElement = pathElement;
         }
 
-        private bool IsFiltered(FiltrCompositeSpec spec, JToken input)
+        private bool IsFiltered(FiltrCompositeSpec spec, JsonNode input)
         {
             if (!spec.Filters.Any())
             {
@@ -37,9 +38,9 @@ namespace Jolt.Net
             return true;
         }
 
-        public void Apply(JToken input, WalkedPath walkedPath)
+        public void Apply(JsonNode input, WalkedPath walkedPath)
         {
-            if (input is JArray arr)
+            if (input is JsonArray arr)
             {
                 HashSet<int> indexesToRemove = null;
 
@@ -79,7 +80,7 @@ namespace Jolt.Net
                     }
                 }
             }
-            else if (input is JObject obj)
+            else if (input is JsonObject obj)
             {
                 HashSet<string> keysToRemove = null;
                 foreach (var kv in obj)

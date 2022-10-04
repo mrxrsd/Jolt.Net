@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -194,7 +195,7 @@ namespace Jolt.Net
          * @param walkedPath WalkedPath to evaluate against
          * @return The data specified by this TransposePathElement.
          */
-        public JToken ObjectEvaluate(WalkedPath walkedPath)
+        public JsonNode ObjectEvaluate(WalkedPath walkedPath)
         {
             // Grap the data we need from however far up the tree we are supposed to go
             PathStep pathStep = walkedPath.ElementFromEnd(_upLevel);
@@ -224,19 +225,19 @@ namespace Jolt.Net
             if (data != null)
             {
                 // Coerce a number into a string
-                if (data.Type == JTokenType.Integer)
+                if (data.Type == JsonNodeType.Integer)
                 {
                     // the idea here being we are looking for an array index value
                     return data.ToString();
                 }
 
                 // Coerce a boolean into a string
-                if (data.Type == JTokenType.Boolean)
+                if (data.Type == JsonNodeType.Boolean)
                 {
                     return data.Value<bool>() ? "true" : "false";
                 }
 
-                if (data.Type == JTokenType.String)
+                if (data.Type == JsonNodeType.String)
                 {
                     return data.ToString();
                 }

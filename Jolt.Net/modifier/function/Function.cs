@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+using System.Text.Json.Nodes;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -94,7 +92,7 @@ namespace Jolt.Net.Functions
 
     public interface IFunction
     {
-        JToken Apply(params JToken[] args);
+        JsonNode Apply(params JsonNode[] args);
     }
 
     public class Noop : IFunction
@@ -106,7 +104,7 @@ namespace Jolt.Net.Functions
          *
          * will cause the key to remain unchanged
          */
-        public JToken Apply(params JToken[] args)
+        public JsonNode Apply(params JsonNode[] args)
         {
             return null;
         }
@@ -129,7 +127,7 @@ namespace Jolt.Net.Functions
      */
     public class IsPresent : IFunction
     {
-        public JToken Apply(params JToken[] args)
+        public JsonNode Apply(params JsonNode[] args)
         {
             if (args.Length == 0)
             {
@@ -153,9 +151,9 @@ namespace Jolt.Net.Functions
      */
     public class NotNull : IFunction
     {
-        public JToken Apply(params JToken[] args)
+        public JsonNode Apply(params JsonNode[] args)
         {
-            if (args.Length == 0 || args[0] == null || args[0].Type == JTokenType.Null)
+            if (args.Length == 0 || args[0] == null || args[0].Type == JsonNodeType.Null)
             {
                 return null;
             }
@@ -177,9 +175,9 @@ namespace Jolt.Net.Functions
      */
     public class IsNull : IFunction
     {
-        public JToken Apply(params JToken[] args)
+        public JsonNode Apply(params JsonNode[] args)
         {
-            if (args.Length == 0 || (args[0] != null && args[0].Type == JTokenType.Null))
+            if (args.Length == 0 || (args[0] != null && args[0].Type == JsonNodeType.Null))
             {
                 return null;
             }
@@ -197,7 +195,7 @@ namespace Jolt.Net.Functions
      */
     public abstract class BaseFunction : IFunction
     {
-        public JToken Apply(params JToken[] args)
+        public JsonNode Apply(params JsonNode[] args)
         {
             if (args.Length == 0)
             {
@@ -205,7 +203,7 @@ namespace Jolt.Net.Functions
             }
             else if (args.Length == 1)
             {
-                if (args[0] is JArray arr)
+                if (args[0] is JsonArray arr)
                 {
                     if (arr.Count == 0)
                     {
@@ -224,7 +222,7 @@ namespace Jolt.Net.Functions
             }
             else
             {
-                var arr = new JArray();
+                var arr = new JsonArray();
                 foreach (var arg in args)
                 {
                     arr.Add(arg);
@@ -233,8 +231,8 @@ namespace Jolt.Net.Functions
             }
         }
 
-        protected abstract JToken ApplyList(JArray input);
-        protected abstract JToken ApplySingle(JToken arg);
+        protected abstract JsonNode ApplyList(JsonArray input);
+        protected abstract JsonNode ApplySingle(JsonNode arg);
     }
 
     /**
@@ -247,9 +245,9 @@ namespace Jolt.Net.Functions
      */
     public abstract class SingleFunction : BaseFunction
     {
-        protected override JToken ApplyList(JArray input)
+        protected override JsonNode ApplyList(JsonArray input)
         {
-            var result = new JArray();
+            var result = new JsonArray();
             foreach (var o in input)
             {
                 var s = ApplySingle(o);
@@ -268,7 +266,7 @@ namespace Jolt.Net.Functions
      */
     public abstract class ListFunction : BaseFunction
     {
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
             return null;
         }
@@ -284,10 +282,10 @@ namespace Jolt.Net.Functions
      */
     public abstract class ArgDrivenFunction<T> : IFunction
     {
-        public JToken Apply(params JToken[] args_)
+        public JsonNode Apply(params JsonNode[] args_)
         {
-            IList<JToken> args = args_;
-            if (args.Count == 1 && args[0] is JArray arr) 
+            IList<JsonNode> args = args_;
+            if (args.Count == 1 && args[0] is JsonArray arr) 
             {
                 args = arr;
             }
@@ -296,7 +294,7 @@ namespace Jolt.Net.Functions
             {
                 if (args.Count == 2)
                 {
-                    if (args[1] is JArray arr2)
+                    if (args[1] is JsonArray arr2)
                     {
                         return ApplyList(specialArg, arr2);
                     }
@@ -307,7 +305,7 @@ namespace Jolt.Net.Functions
                 }
                 else
                 {
-                    var input = new JArray(args.Skip(1));
+                    var input = new JsonArray(args.Skip(1));
                     return ApplyList(specialArg, input);
                 }
             }
@@ -317,14 +315,14 @@ namespace Jolt.Net.Functions
             }
         }
 
-        protected abstract bool TryGetSpecialArg(IList<JToken> args, out T value);
-        protected abstract JToken ApplyList(T specialArg, JArray args);
-        protected abstract JToken ApplySingle(T specialArg, JToken args);
+        protected abstract bool TryGetSpecialArg(IList<JsonNode> args, out T value);
+        protected abstract JsonNode ApplyList(T specialArg, JsonArray args);
+        protected abstract JsonNode ApplySingle(T specialArg, JsonNode args);
     }
 
     public abstract class ArgDrivenListFunction<T> : ArgDrivenFunction<T>
     {
-        protected override JToken ApplySingle(T specialArg, JToken arg)
+        protected override JsonNode ApplySingle(T specialArg, JsonNode arg)
         {
             return null;
         }
@@ -332,9 +330,9 @@ namespace Jolt.Net.Functions
 
     static class ArgDrivenFunctionHelper
     {
-        public static bool TryGetSpecialArg(IList<JToken> args, out int value)
+        public static bool TryGetSpecialArg(IList<JsonNode> args, out int value)
         {
-            if (args.Count >= 2 && args[0].Type == JTokenType.Integer)
+            if (args.Count >= 2 && args[0].Type == JsonNodeType.Integer)
             {
                 value = args[0].Value<int>();
                 return true;
@@ -343,9 +341,9 @@ namespace Jolt.Net.Functions
             return false;
         }
 
-        public static bool TryGetSpecialArg(IList<JToken> args, out string value)
+        public static bool TryGetSpecialArg(IList<JsonNode> args, out string value)
         {
-            if (args.Count >= 2 && args[0].Type == JTokenType.String)
+            if (args.Count >= 2 && args[0].Type == JsonNodeType.String)
             {
                 value = args[0].ToString();
                 return true;
@@ -357,13 +355,13 @@ namespace Jolt.Net.Functions
 
     public abstract class ArgDrivenIntListFunction : ArgDrivenListFunction<int>
     {
-        protected override bool TryGetSpecialArg(IList<JToken> args, out int value) =>
+        protected override bool TryGetSpecialArg(IList<JsonNode> args, out int value) =>
             ArgDrivenFunctionHelper.TryGetSpecialArg(args, out value);
     }
 
     public abstract class ArgDrivenStringListFunction : ArgDrivenListFunction<string>
     {
-        protected override bool TryGetSpecialArg(IList<JToken> args, out string value) =>
+        protected override bool TryGetSpecialArg(IList<JsonNode> args, out string value) =>
             ArgDrivenFunctionHelper.TryGetSpecialArg(args, out value);
     }
 
@@ -378,9 +376,9 @@ namespace Jolt.Net.Functions
      */
     public abstract class ArgDrivenSingleFunction<T> : ArgDrivenFunction<T>
     {
-        protected override JToken ApplyList(T specialArg, JArray input)
+        protected override JsonNode ApplyList(T specialArg, JsonArray input)
         {
-            var result = new JArray();
+            var result = new JsonArray();
             foreach (var o in input)
             {
                 var r = ApplySingle(specialArg, o);
@@ -392,7 +390,7 @@ namespace Jolt.Net.Functions
 
     public abstract class ArgDrivenSingleStringFunction : ArgDrivenSingleFunction<string>
     {
-        protected override bool TryGetSpecialArg(IList<JToken> args, out string value) =>
+        protected override bool TryGetSpecialArg(IList<JsonNode> args, out string value) =>
             ArgDrivenFunctionHelper.TryGetSpecialArg(args, out value);
     }
 }

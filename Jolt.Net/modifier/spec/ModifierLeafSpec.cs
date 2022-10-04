@@ -15,9 +15,10 @@
  */
 
 using Jolt.Net.Functions;
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -26,24 +27,24 @@ namespace Jolt.Net
 
         private readonly List<FunctionEvaluator> _functionEvaluatorList = new List<FunctionEvaluator>();
 
-        public ModifierLeafSpec(string rawJsonKey, JToken rhsObj, OpMode opMode, IReadOnlyDictionary<string, IFunction> functionsMap) :
+        public ModifierLeafSpec(string rawJsonKey, JsonNode rhsObj, OpMode opMode, IReadOnlyDictionary<string, IFunction> functionsMap) :
             base(rawJsonKey, opMode)
         {
             FunctionEvaluator functionEvaluator;
 
             // "key": "expression1"
-            if (rhsObj.Type == JTokenType.String)
+            if (rhsObj.Type == JsonNodeType.String)
             {
                 string s = rhsObj.ToString();
                 functionEvaluator = BuildFunctionEvaluator(s, functionsMap);
                 _functionEvaluatorList.Add(functionEvaluator);
             }
             // "key": ["expression1", "expression2", "expression3"]
-            else if (rhsObj is JArray rhsList && rhsList.Count > 0)
+            else if (rhsObj is JsonArray rhsList && rhsList.Count > 0)
             {
                 foreach (var rhs in rhsList)
                 {
-                    if (rhs.Type == JTokenType.String)
+                    if (rhs.Type == JsonNodeType.String)
                     {
                         functionEvaluator = BuildFunctionEvaluator(rhs.ToString(), functionsMap);
                         _functionEvaluatorList.Add(functionEvaluator);
@@ -63,13 +64,13 @@ namespace Jolt.Net
             }
         }
 
-        protected override void ApplyElement(string inputKey, JToken inputOptional, MatchedElement thisLevel, WalkedPath walkedPath, JObject context)
+        protected override void ApplyElement(string inputKey, JsonNode inputOptional, MatchedElement thisLevel, WalkedPath walkedPath, JsonObject context)
         {
-            JToken parent = walkedPath.LastElement().TreeRef;
+            JsonNode parent = walkedPath.LastElement().TreeRef;
 
             walkedPath.Add(inputOptional, thisLevel);
 
-            JToken valueOptional = GetFirstAvailable(_functionEvaluatorList, inputOptional, walkedPath, context);
+            JsonNode valueOptional = GetFirstAvailable(_functionEvaluatorList, inputOptional, walkedPath, context);
 
             if (valueOptional != null)
             {
@@ -110,9 +111,9 @@ namespace Jolt.Net
             }
         }
 
-        private static JToken GetFirstAvailable(List<FunctionEvaluator> functionEvaluatorList, JToken inputOptional, WalkedPath walkedPath, JObject context)
+        private static JsonNode GetFirstAvailable(List<FunctionEvaluator> functionEvaluatorList, JsonNode inputOptional, WalkedPath walkedPath, JsonObject context)
         {
-            JToken valueOptional = null;
+            JsonNode valueOptional = null;
             foreach (FunctionEvaluator functionEvaluator in functionEvaluatorList)
             {
                 try

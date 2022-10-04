@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -182,13 +183,13 @@ namespace Jolt.Net
     {
         private readonly FiltrCompositeSpec _rootSpec;
 
-        public Filtr(JToken spec)
+        public Filtr(JsonNode spec)
         {
             if (spec == null)
             {
                 throw new SpecException("Filtr expected a spec of Map type, got 'null'.");
             }
-            if (!(spec is JObject dic))
+            if (!(spec is JsonObject dic))
             {
                 throw new SpecException("Filtr expected a spec of Map type, got " + spec.GetType().Name);
             }
@@ -208,18 +209,18 @@ namespace Jolt.Net
                     }
                     parentSpec = childSpec;
                 }
-                if (!(kv.Value is JObject filterSpec))
+                if (!(kv.Value is JsonObject filterSpec))
                 {
                     throw new SpecException($"Filtr object filter specification must be a JSON object (found {kv.Value.Type})");
                 }
-                var propFilters = new List<KeyValuePair<string, JToken>>();
+                var propFilters = new List<KeyValuePair<string, JsonNode>>();
                 foreach (var filterKv in filterSpec)
                 {
-                    if (filterKv.Value.Type == JTokenType.Array || filterKv.Value.Type == JTokenType.Object)
+                    if (filterKv.Value.Type == JsonNodeType.Array || filterKv.Value.Type == JsonNodeType.Object)
                     {
                         throw new SpecException($"Filter object filter specification must be a simple JSON value (string, number or null)");
                     }
-                    propFilters.Add(new KeyValuePair<string, JToken>(filterKv.Key, filterKv.Value));
+                    propFilters.Add(new KeyValuePair<string, JsonNode>(filterKv.Key, filterKv.Value));
                 }
                 parentSpec.Filters.Add(new FiltrLeafSpec(propFilters.AsReadOnly()));
             }
@@ -230,10 +231,10 @@ namespace Jolt.Net
          *
          * @param input the JSON object to transform in plain vanilla Jackson Map<string, object> style
          */
-        public JToken Transform(JToken input)
+        public JsonNode Transform(JsonNode input)
         {
             // Wrap the input in a map to fool the CompositeSpec to recurse itself.
-            // var wrappedMap = new JObject();
+            // var wrappedMap = new JsonObject();
             // wrappedMap.Add(ROOT_KEY, input);
             // _rootSpec.ApplyToMap(wrappedMap);
             // // it's possible the input was cloned if it belonged to another object graph

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -36,7 +37,7 @@ namespace Jolt.Net
                 {
 
                     // Lookup a Constructor with a Single "object" arg.
-                    var constructor = transformType.GetConstructor(new[] { typeof(JObject) });
+                    var constructor = transformType.GetConstructor(new[] { typeof(JsonObject) });
                     if (constructor == null)
                     {
                         // This means the transform class "violated" the SpecTransform marker interface

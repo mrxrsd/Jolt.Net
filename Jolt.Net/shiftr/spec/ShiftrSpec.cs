@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -63,6 +64,6 @@ namespace Jolt.Net
             return _pathElement;
         }
 
-        public abstract bool Apply(string inputKey, JToken inputOptional, WalkedPath walkedPath, JObject output, JObject context);
+        public abstract bool Apply(string inputKey, JsonNode inputOptional, WalkedPath walkedPath, JsonObject output, JsonObject context);
     }
 }

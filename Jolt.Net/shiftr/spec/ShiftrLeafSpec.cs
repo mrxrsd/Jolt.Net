@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -41,17 +42,17 @@ namespace Jolt.Net
         // List of the processed version of the "write specifications"
         private readonly IReadOnlyList<PathEvaluatingTraversal> _shiftrWriters;
 
-        public ShiftrLeafSpec(string rawKey, JToken rhs) :
+        public ShiftrLeafSpec(string rawKey, JsonNode rhs) :
             base(rawKey)
         {
             List<PathEvaluatingTraversal> writers;
-            if (rhs.Type == JTokenType.String)
+            if (rhs.Type == JsonNodeType.String)
             {
                 // leaf level so spec is an dot notation write path
                 writers = new List<PathEvaluatingTraversal>();
                 writers.Add(TRAVERSAL_BUILDER.Build(rhs));
             }
-            else if (rhs is JArray rhsList)
+            else if (rhs is JsonArray rhsList)
             {
                 // leaf level list
                 // Spec : "foo": ["a", "b"] : Shift the value of "foo" to both "a" and "b"
@@ -61,7 +62,7 @@ namespace Jolt.Net
                     writers.Add(TRAVERSAL_BUILDER.Build(dotNotation));
                 }
             }
-            else if (rhs.Type == JTokenType.Null)
+            else if (rhs.Type == JsonNodeType.Null)
             {
                 // this means someone wanted to match something, but not send it anywhere.  Basically like a removal.
                 writers = new List<PathEvaluatingTraversal>();
@@ -79,16 +80,16 @@ namespace Jolt.Net
          *
          * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
          */
-        public override bool Apply(string inputKey, JToken inputOptional, WalkedPath walkedPath, JObject output, JObject context)
+        public override bool Apply(string inputKey, JsonNode inputOptional, WalkedPath walkedPath, JsonObject output, JsonObject context)
         {
-            JToken input = inputOptional;
+            JsonNode input = inputOptional;
             MatchedElement thisLevel = _pathElement.Match(inputKey, walkedPath);
             if (thisLevel == null)
             {
                 return false;
             }
 
-            JToken data;
+            JsonNode data;
             bool realChild = false;  // by default don't block further Shiftr matches
 
             if (_pathElement is DollarPathElement ||

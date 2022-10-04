@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
     public class ChainrBuilder
     {
-        private readonly JToken _chainrSpecObj;
+        private readonly JsonNode _chainrSpecObj;
         protected IReadOnlyDictionary<string, Type> _transforms = null;
         protected IChainrInstantiator _chainrInstantiator = new DefaultChainrInstantiator();
 
@@ -31,7 +32,7 @@ namespace Jolt.Net
          *
          * @param chainrSpecObj List of transforms to run
          */
-        public ChainrBuilder(JToken chainrSpecObj)
+        public ChainrBuilder(JsonNode chainrSpecObj)
         {
             _chainrSpecObj = chainrSpecObj;
         }

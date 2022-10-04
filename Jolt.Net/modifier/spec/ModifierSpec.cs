@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -80,7 +81,7 @@ namespace Jolt.Net
 
         public IMatchablePathElement GetPathElement() => _pathElement;
 
-        public bool Apply(string inputKey, JToken inputOptional, WalkedPath walkedPath, JObject output, JObject context)
+        public bool Apply(string inputKey, JsonNode inputOptional, WalkedPath walkedPath, JsonObject output, JsonObject context)
         {
             if (output != null)
             {
@@ -108,7 +109,7 @@ namespace Jolt.Net
          * Templatr specific override that is used in BaseSpec#apply(...)
          * The name is changed for easy identification during debugging
          */
-        protected abstract void ApplyElement(string key, JToken inputOptional, MatchedElement thisLevel, WalkedPath walkedPath, JObject context);
+        protected abstract void ApplyElement(string key, JsonNode inputOptional, MatchedElement thisLevel, WalkedPath walkedPath, JsonObject context);
 
         /**
          * Static utility method for facilitating writes on input object
@@ -118,9 +119,9 @@ namespace Jolt.Net
          * @param value to write
          * @param opMode to determine if write is applicable
          */
-        protected static void SetData(JToken parent, MatchedElement matchedElement, JToken value, OpMode opMode)
+        protected static void SetData(JsonNode parent, MatchedElement matchedElement, JsonNode value, OpMode opMode)
         {
-            if (parent is JObject source)
+            if (parent is JsonObject source)
             {
                 string key = matchedElement.RawKey;
                 if (opMode.IsApplicable(source, key))
@@ -128,7 +129,7 @@ namespace Jolt.Net
                     source[key] = value;
                 }
             }
-            else if (parent is JArray list && matchedElement is ArrayMatchedElement ame)
+            else if (parent is JsonArray list && matchedElement is ArrayMatchedElement ame)
             {
                 int origSize = ame.GetOrigSize();
                 int reqIndex = ame.GetRawIndex();

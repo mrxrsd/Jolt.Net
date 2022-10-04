@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -25,11 +26,11 @@ namespace Jolt.Net
      */
     public sealed class PathStep
     {
-        public JToken TreeRef { get; }
+        public JsonNode TreeRef { get; }
         public MatchedElement MatchedElement { get; }
         public int? OrigSize { get; }
 
-        public PathStep(JToken treeRef, MatchedElement matchedElement)
+        public PathStep(JsonNode treeRef, MatchedElement matchedElement)
         {
             TreeRef = treeRef;
             MatchedElement = matchedElement;

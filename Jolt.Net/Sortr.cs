@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -60,27 +61,27 @@ namespace Jolt.Net
          *
          * @param input the JSON object to transform, in plain vanilla Jackson Map<string, object> style
          */
-        public JToken Transform(JToken input)
+        public JsonNode Transform(JsonNode input)
         {
             return SortJson(input);
         }
 
-        public static JToken SortJson(JToken value)
+        public static JsonNode SortJson(JsonNode value)
         {
-            if (value is JObject obj)
+            if (value is JsonObject obj)
             {
                 return SortMap(obj);
             }
-            if (value is JArray arr)
+            if (value is JsonArray arr)
             {
                 return Ordered(arr);
             }
             return value;
         }
 
-        private static JObject SortMap(JObject map)
+        private static JsonObject SortMap(JsonObject map)
         {
-            var orderedMap = new JObject();
+            var orderedMap = new JsonObject();
             foreach (var prop in map.Properties().OrderBy(p => p.Name, _jsonKeyComparator))
             {
                 orderedMap.Add(prop.Name, SortJson(prop.Value));
@@ -88,11 +89,11 @@ namespace Jolt.Net
             return orderedMap;
         }
 
-        private static JArray Ordered(JArray list)
+        private static JsonArray Ordered(JsonArray list)
         {
             // Don't sort the list because that would change intent, but sort its components
             // Additionally, make a copy of the List in-case the provided list is Immutable / Unmodifiable
-            var newList = new JArray();
+            var newList = new JsonArray();
             foreach (var entry in list)
             {
                 newList.Add(SortJson(entry));

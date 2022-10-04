@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -49,6 +50,6 @@ namespace Jolt.Net
          * @return the results of the transformation
          * @throws com.bazaarvoice.jolt.exception.TransformException if there are issues with the transform
          */
-        JToken Transform(JToken input, JObject context);
+        JsonNode Transform(JsonNode input, JsonObject context);
     }
 }

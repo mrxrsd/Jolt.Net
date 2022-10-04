@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -37,7 +38,7 @@ namespace Jolt.Net
             }
         }
 
-        public override JToken EvaluateArg(WalkedPath walkedPath, JObject context)
+        public override JsonNode EvaluateArg(WalkedPath walkedPath, JsonObject context)
         {
             return _pathElement.ObjectEvaluate(walkedPath);
         }
@@ -52,7 +53,7 @@ namespace Jolt.Net
             _traversal = traversal;
         }
 
-        public override JToken EvaluateArg(WalkedPath walkedPath, JObject context)
+        public override JsonNode EvaluateArg(WalkedPath walkedPath, JsonObject context)
         {
             return _traversal.Read(context, walkedPath);
         }
@@ -60,14 +61,14 @@ namespace Jolt.Net
 
     class LiteralArg : FunctionArg
     {
-        private JToken _returnValue;
+        private JsonNode _returnValue;
 
-        public LiteralArg(JToken rv)
+        public LiteralArg(JsonNode rv)
         {
             _returnValue = rv;
         }
 
-        public override JToken EvaluateArg(WalkedPath walkedPath, JObject context)
+        public override JsonNode EvaluateArg(WalkedPath walkedPath, JsonObject context)
         {
             return _returnValue;
         }
@@ -86,11 +87,11 @@ namespace Jolt.Net
             return new ContextLookupArg(traversal);
         }
 
-        public static FunctionArg ForLiteral(JToken obj, bool parseArg)
+        public static FunctionArg ForLiteral(JsonNode obj, bool parseArg)
         {
             if (parseArg)
             {
-                if (obj.Type == JTokenType.String)
+                if (obj.Type == JsonNodeType.String)
                 {
                     string arg = obj.ToString();
                     if (arg.Length == 0)
@@ -99,25 +100,25 @@ namespace Jolt.Net
                     }
                     else if (arg.StartsWith("'") && arg.EndsWith("'"))
                     {
-                        return new LiteralArg(JValue.CreateString(arg.Substring(1, arg.Length - 2)));
+                        return new LiteralArg(JsonValue.CreateString(arg.Substring(1, arg.Length - 2)));
                     }
                     else if (arg.Equals("true", StringComparison.OrdinalIgnoreCase))
                     {
-                        return new LiteralArg(new JValue(true));
+                        return new LiteralArg(new JsonValue(true));
                     }
                     else if (arg.Equals("false", StringComparison.OrdinalIgnoreCase))
                     {
-                        return new LiteralArg(new JValue(false));
+                        return new LiteralArg(new JsonValue(false));
                     }
                     else
                     {
                         if (Int64.TryParse(arg, out var lVal))
                         {
-                            return new LiteralArg(new JValue(lVal));
+                            return new LiteralArg(new JsonValue(lVal));
                         }
                         if (Double.TryParse(arg, out var numVal))
                         {
-                            return new LiteralArg(new JValue(numVal));
+                            return new LiteralArg(new JsonValue(numVal));
                         }
                         return new LiteralArg(arg);
                     }
@@ -133,6 +134,6 @@ namespace Jolt.Net
             }
         }
 
-        public abstract JToken EvaluateArg(WalkedPath walkedPath, JObject context);
+        public abstract JsonNode EvaluateArg(WalkedPath walkedPath, JsonObject context);
     }
 }

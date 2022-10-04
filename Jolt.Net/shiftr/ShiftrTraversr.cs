@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -40,16 +41,16 @@ namespace Jolt.Net
          *  3) if there something other than a list there, grab it and stuff it and the data into a list
          *     and overwrite what is there with a list.
          */
-        public override JToken HandleFinalSet(ITraversalStep traversalStep, JToken tree, string key, JToken data)
+        public override JsonNode HandleFinalSet(ITraversalStep traversalStep, JsonNode tree, string key, JsonNode data)
         {
             var optSub = traversalStep.Get(tree, key);
 
-            if (optSub == null || optSub.Type == JTokenType.Null)
+            if (optSub == null || optSub.Type == JsonNodeType.Null)
             {
                 // nothing is here so just set the data
                 traversalStep.OverwriteSet(tree, key, data);
             }
-            else if (optSub is JArray arr) 
+            else if (optSub is JsonArray arr) 
             {
                 // there is a list here, so we just add to it
                 arr.Add(data);
@@ -57,7 +58,7 @@ namespace Jolt.Net
             else
             {
                 // take whatever is there and make it the first element in an Array
-                var temp = new JArray();
+                var temp = new JsonArray();
                 temp.Add(optSub);
                 temp.Add(data);
 

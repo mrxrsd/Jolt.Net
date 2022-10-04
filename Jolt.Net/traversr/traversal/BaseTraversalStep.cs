@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -30,18 +31,18 @@ namespace Jolt.Net
             _child = child;
         }
 
-        public abstract JToken Get(JToken tree, string key);
+        public abstract JsonNode Get(JsonNode tree, string key);
         public abstract Type GetStepType();
-        public abstract JToken NewContainer();
-        public abstract JToken OverwriteSet(JToken tree, string key, JToken data);
-        public abstract JToken Remove(JToken tree, string key);
+        public abstract JsonNode NewContainer();
+        public abstract JsonNode OverwriteSet(JsonNode tree, string key, JsonNode data);
+        public abstract JsonNode Remove(JsonNode tree, string key);
 
         public ITraversalStep GetChild()
         {
             return _child;
         }
 
-        public JToken Traverse(JToken tree, TraversalStepOperation op, IEnumerator<string> keys, JToken data)
+        public JsonNode Traverse(JsonNode tree, TraversalStepOperation op, IEnumerator<string> keys, JsonNode data)
         {
             if (tree == null)
             {

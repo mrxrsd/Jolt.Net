@@ -15,8 +15,9 @@
  */
 
 using Jolt.Net.Functions;
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -36,9 +37,9 @@ namespace Jolt.Net
             _functionsMap = functionsMap;
         }
 
-        public override ModifierSpec CreateSpec(string lhs, JToken rhs)
+        public override ModifierSpec CreateSpec(string lhs, JsonNode rhs)
         {
-            if (rhs is JObject dic && dic.Count > 0)
+            if (rhs is JsonObject dic && dic.Count > 0)
             {
                 return new ModifierCompositeSpec(lhs, dic, _opMode, this);
             }

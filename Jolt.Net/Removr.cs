@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -188,7 +189,7 @@ namespace Jolt.Net
             {
                 throw new SpecException("Removr expected a spec of Map type, got 'null'.");
             }
-            if (!(spec is JObject dic))
+            if (!(spec is JsonObject dic))
             {
                 throw new SpecException("Removr expected a spec of Map type, got " + spec.GetType().Name);
             }
@@ -201,10 +202,10 @@ namespace Jolt.Net
          *
          * @param input the JSON object to transform in plain vanilla Jackson Map<string, object> style
          */
-        public JToken Transform(JToken input)
+        public JsonNode Transform(JsonNode input)
         {
             // Wrap the input in a map to fool the CompositeSpec to recurse itself.
-            var wrappedMap = new JObject();
+            var wrappedMap = new JsonObject();
             wrappedMap.Add(ROOT_KEY, input);
             _rootSpec.ApplyToMap(wrappedMap);
             // it's possible the input was cloned if it belonged to another object graph

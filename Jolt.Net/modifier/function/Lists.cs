@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net.Functions.Lists
 {
@@ -25,7 +26,7 @@ namespace Jolt.Net.Functions.Lists
      */
     public class FirstElement : ListFunction
     {
-        protected override JToken ApplyList(JArray input)
+        protected override JsonNode ApplyList(JsonArray input)
         {
             return input.Count > 0 ? input[0] : null;
         }
@@ -36,7 +37,7 @@ namespace Jolt.Net.Functions.Lists
      */
     public class LastElement : ListFunction
     {
-        protected override JToken ApplyList(JArray input)
+        protected override JsonNode ApplyList(JsonArray input)
         {
             return input.Count > 0 ? input[input.Count - 1] : null;
         }
@@ -47,7 +48,7 @@ namespace Jolt.Net.Functions.Lists
      */
     public class ElementAt : ArgDrivenIntListFunction
     {
-        protected override JToken ApplyList(int specialArg, JArray args)
+        protected override JsonNode ApplyList(int specialArg, JsonArray args)
         {
             if (args != null && specialArg >= 0 && specialArg < args.Count)
             {
@@ -62,14 +63,14 @@ namespace Jolt.Net.Functions.Lists
      */
     public class ToList : BaseFunction
     {
-        protected override JToken ApplyList(JArray input)
+        protected override JsonNode ApplyList(JsonArray input)
         {
             return input;
         }
 
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            return new JArray(arg);
+            return new JsonArray(arg);
         }
     }
 
@@ -78,12 +79,12 @@ namespace Jolt.Net.Functions.Lists
      */
     public class Sort : BaseFunction
     {
-        protected override JToken ApplyList(JArray input)
+        protected override JsonNode ApplyList(JsonArray input)
         {
-            return new JArray(input.OrderBy(x => x.ToString()));
+            return new JsonArray(input.OrderBy(x => x.ToString()));
         }
 
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
             return arg;
         }

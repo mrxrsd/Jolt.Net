@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -30,13 +31,13 @@ namespace Jolt.Net
         {
         }
 
-        public override Type GetStepType() => typeof(JArray);
+        public override Type GetStepType() => typeof(JsonArray);
 
-        public override JToken NewContainer() => new JArray();
+        public override JsonNode NewContainer() => new JsonArray();
 
-        public override JToken Get(JToken tree, string key)
+        public override JsonNode Get(JsonNode tree, string key)
         {
-            var list = (JArray)tree;
+            var list = (JsonArray)tree;
             int arrayIndex = Int32.Parse(key);
             if (arrayIndex >= 0 && arrayIndex < list.Count)
             {
@@ -45,9 +46,9 @@ namespace Jolt.Net
             return null;
         }
 
-        public override JToken Remove(JToken tree, string key)
+        public override JsonNode Remove(JsonNode tree, string key)
         {
-            var list = (JArray)tree;
+            var list = (JsonArray)tree;
             int arrayIndex = Int32.Parse(key);
             if (arrayIndex < list.Count)
             {
@@ -58,9 +59,9 @@ namespace Jolt.Net
             return null;
         }
 
-        public override JToken OverwriteSet(JToken tree, string key, JToken data)
+        public override JsonNode OverwriteSet(JsonNode tree, string key, JsonNode data)
         {
-            var list = (JArray)tree;
+            var list = (JsonArray)tree;
             int arrayIndex = Int32.Parse(key);
             if (arrayIndex >= 0)
             {
@@ -70,7 +71,7 @@ namespace Jolt.Net
             return data;
         }
 
-        private static void EnsureArraySize(JArray list, int upperIndex)
+        private static void EnsureArraySize(JsonArray list, int upperIndex)
         {
             for (int sizing = list.Count; sizing <= upperIndex; sizing++)
             {

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -84,22 +85,22 @@ namespace Jolt.Net
         // The list of actual ContextualTransforms, for clients that specifically care.
         private readonly IReadOnlyList<IContextualTransform> _actualContextualTransforms;
 
-        public static Chainr FromSpec(JToken input)
+        public static Chainr FromSpec(JsonNode input)
         {
             return new ChainrBuilder(input).Build();
         }
 
-        public static Chainr FromSpec(JToken input, IReadOnlyDictionary<string, Type> transforms)
+        public static Chainr FromSpec(JsonNode input, IReadOnlyDictionary<string, Type> transforms)
         {
             return new ChainrBuilder(input).Transforms(transforms).Build();
         }
 
-        public static Chainr FromSpec(JToken input, IChainrInstantiator instantiator)
+        public static Chainr FromSpec(JsonNode input, IChainrInstantiator instantiator)
         {
             return new ChainrBuilder(input).Loader(instantiator).Build();
         }
 
-        public static Chainr FromSpec(JToken input, IReadOnlyDictionary<string, Type> transforms, IChainrInstantiator instantiator)
+        public static Chainr FromSpec(JsonNode input, IReadOnlyDictionary<string, Type> transforms, IChainrInstantiator instantiator)
         {
             return new ChainrBuilder(input).Transforms(transforms).Loader(instantiator).Build();
         }
@@ -117,7 +118,7 @@ namespace Jolt.Net
                 _transform = transform;
             }
 
-            public JToken Transform(JToken input, JObject context)
+            public JsonNode Transform(JsonNode input, JsonObject context)
             {
                 return _transform.Transform(input);
             }
@@ -183,12 +184,12 @@ namespace Jolt.Net
          * @throws com.bazaarvoice.jolt.exception.TransformException if the specification is malformed, an operation is not
          *                       found, or if one of the specified transforms throws an exception.
          */
-        public JToken Transform(JToken input, JObject context)
+        public JsonNode Transform(JsonNode input, JsonObject context)
         {
             return DoTransform(_transformsList, input, context);
         }
 
-        public JToken Transform(JToken input)
+        public JsonNode Transform(JsonNode input)
         {
             return DoTransform(_transformsList, input, null);
         }
@@ -201,7 +202,7 @@ namespace Jolt.Net
          * @param input the input data to transform
          * @param to transform from the chainrSpec to end with: 0 based index exclusive
          */
-        public JToken Transform(int to, JToken input)
+        public JsonNode Transform(int to, JsonNode input)
         {
             return Transform(0, to, input, null);
         }
@@ -213,7 +214,7 @@ namespace Jolt.Net
          * @param to transform from the chainrSpec to end with: 0 based index exclusive
          * @param context optional tweaks that the consumer of the transform would like
          */
-        public JToken Transform(int to, JToken input, JObject context)
+        public JsonNode Transform(int to, JsonNode input, JsonObject context)
         {
             return Transform(0, to, input, context);
         }
@@ -225,7 +226,7 @@ namespace Jolt.Net
          * @param from transform from the chainrSpec to start with: 0 based index
          * @param to transform from the chainrSpec to end with: 0 based index exclusive
          */
-        public JToken Transform(int from, int to, JToken input)
+        public JsonNode Transform(int from, int to, JsonNode input)
         {
             return Transform(from, to, input, null);
         }
@@ -240,7 +241,7 @@ namespace Jolt.Net
          * @param to transform from the chainrSpec to end with: 0 based index exclusive
          * @param context optional tweaks that the consumer of the transform would like
          */
-        public JToken Transform(int from, int to, JToken input, JObject context)
+        public JsonNode Transform(int from, int to, JsonNode input, JsonObject context)
         {
             if (from < 0 || to > _transformsList.Count || to <= from)
             {
@@ -250,9 +251,9 @@ namespace Jolt.Net
             return DoTransform(_transformsList.Skip(from).Take(to - from).ToList(), input, context);
         }
 
-        private static JToken DoTransform(List<IContextualTransform> transforms, JToken input, JObject context)
+        private static JsonNode DoTransform(List<IContextualTransform> transforms, JsonNode input, JsonObject context)
         {
-            JToken intermediate = input;
+            JsonNode intermediate = input;
             foreach (IContextualTransform transform in transforms)
             {
                 intermediate = transform.Transform(intermediate, context);

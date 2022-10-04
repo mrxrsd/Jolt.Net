@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -43,7 +44,7 @@ namespace Jolt.Net
         private readonly ExecutionStrategy _executionStrategy;
         private readonly DataType _specDataType;
 
-        public ModifierCompositeSpec(string key, JObject spec, OpMode opMode, TemplatrSpecBuilder specBuilder) :
+        public ModifierCompositeSpec(string key, JsonObject spec, OpMode opMode, TemplatrSpecBuilder specBuilder) :
             base(key, opMode)
         {
 
@@ -124,9 +125,9 @@ namespace Jolt.Net
 
         }
 
-        protected override void ApplyElement(string inputKey, JToken inputOptional, MatchedElement thisLevel, WalkedPath walkedPath, JObject context)
+        protected override void ApplyElement(string inputKey, JsonNode inputOptional, MatchedElement thisLevel, WalkedPath walkedPath, JsonObject context)
         {
-            JToken input = inputOptional;
+            JsonNode input = inputOptional;
             // sanity checks, cannot work on a list spec with map input and vice versa, and runtime with null input
             if (!_specDataType.IsCompatible(input))
             {
@@ -134,18 +135,18 @@ namespace Jolt.Net
             }
 
             // create input if it is null
-            if (input == null || input.Type == JTokenType.Null)
+            if (input == null || input.Type == JsonNodeType.Null)
             {
                 input = _specDataType.Create(inputKey, walkedPath, _opMode);
                 // if input has changed, wrap
-                if (input != null && input.Type != JTokenType.Null)
+                if (input != null && input.Type != JsonNodeType.Null)
                 {
                     inputOptional = input;
                 }
             }
 
             // if input is List, create special ArrayMatchedElement, which tracks the original size of the input array
-            if (input is JArray list)
+            if (input is JsonArray list)
             {
                 // LIST means spec had array index explicitly specified, hence expand if needed
                 if (_specDataType is LIST specList)

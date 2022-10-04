@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -41,7 +42,7 @@ namespace Jolt.Net
          * Given a source map and a input key returns true if it is ok to go ahead with
          * write operation given a specific opMode
          */
-        public virtual bool IsApplicable(JObject source, string key)
+        public virtual bool IsApplicable(JsonObject source, string key)
         {
             return source != null && key != null;
         }
@@ -50,7 +51,7 @@ namespace Jolt.Net
          * Given a source list and a input index and original size of the list (when passed in as input)
          * returns true if it is ok to go ahead with write operation given a specific opMode
          */
-        public virtual bool IsApplicable(JArray source, int reqIndex, int origSize)
+        public virtual bool IsApplicable(JsonArray source, int reqIndex, int origSize)
         {
             return source != null && reqIndex >= 0 && origSize >= 0;
         }
@@ -115,16 +116,16 @@ namespace Jolt.Net
         {
         }
 
-        public override bool IsApplicable(JObject source, string key)
+        public override bool IsApplicable(JsonObject source, string key)
         {
             return base.IsApplicable(source, key) &&
-                (!source.TryGetValue(key, out var value) || value == null || value.Type == JTokenType.Null);
+                (!source.TryGetValue(key, out var value) || value == null || value.Type == JsonNodeType.Null);
         }
 
-        public override bool IsApplicable(JArray source, int reqIndex, int origSize)
+        public override bool IsApplicable(JsonArray source, int reqIndex, int origSize)
         {
             return base.IsApplicable(source, reqIndex, origSize) && 
-                (source[reqIndex] == null || source[reqIndex].Type == JTokenType.Null);
+                (source[reqIndex] == null || source[reqIndex].Type == JsonNodeType.Null);
         }
     }
 
@@ -135,16 +136,16 @@ namespace Jolt.Net
         {
         }
 
-        public override bool IsApplicable(JObject source, string key)
+        public override bool IsApplicable(JsonObject source, string key)
         {
             return base.IsApplicable(source, key) && !source.ContainsKey(key);
         }
 
-        public override bool IsApplicable(JArray source, int reqIndex, int origSize)
+        public override bool IsApplicable(JsonArray source, int reqIndex, int origSize)
         {
             return base.IsApplicable(source, reqIndex, origSize) &&
                     // only new index contains null
-                    reqIndex >= origSize && (source[reqIndex] == null || source[reqIndex].Type == JTokenType.Null);
+                    reqIndex >= origSize && (source[reqIndex] == null || source[reqIndex].Type == JsonNodeType.Null);
         }
     };
 }

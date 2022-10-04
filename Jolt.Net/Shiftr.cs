@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -466,18 +467,18 @@ namespace Jolt.Net
          *
          * @throws com.bazaarvoice.jolt.exception.SpecException for a malformed spec
          */
-        public Shiftr(JToken spec)
+        public Shiftr(JsonNode spec)
         {
             if (spec == null)
             {
                 throw new SpecException("Shiftr expected a spec of Map type, got 'null'.");
             }
-            if (spec.Type != JTokenType.Object)
+            if (spec.Type != JsonNodeType.Object)
             {
                 throw new SpecException("Shiftr expected a spec of Map type, got " + spec.Type.ToString());
             }
 
-            _rootSpec = new ShiftrCompositeSpec(ROOT_KEY, (JObject)spec);
+            _rootSpec = new ShiftrCompositeSpec(ROOT_KEY, (JsonObject)spec);
         }
 
         /**
@@ -488,9 +489,9 @@ namespace Jolt.Net
          * @throws com.bazaarvoice.jolt.exception.TransformException for a malformed spec or if there are issues during
          * the transform
          */
-        public JToken Transform(JToken input)
+        public JsonNode Transform(JsonNode input)
         {
-            var output = new JObject();
+            var output = new JsonObject();
 
             // Create a root LiteralPathElement so that # is useful at the root level
             MatchedElement rootLpe = new MatchedElement(ROOT_KEY);
@@ -500,7 +501,7 @@ namespace Jolt.Net
             _rootSpec.Apply(ROOT_KEY, input, walkedPath, output, null);
 
             output.TryGetValue(ROOT_KEY, out var result);
-            return result ?? JValue.CreateNull();
+            return result ?? JsonValue.CreateNull();
         }
     }
 }

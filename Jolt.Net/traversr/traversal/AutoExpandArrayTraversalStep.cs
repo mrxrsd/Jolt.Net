@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -40,7 +41,7 @@ namespace Jolt.Net
         {
         }
 
-        public override JToken Get(JToken list, string key)
+        public override JsonNode Get(JsonNode list, string key)
         {
             if ("[]" != key)
             {
@@ -50,7 +51,7 @@ namespace Jolt.Net
             return null;
         }
 
-        public override JToken Remove(JToken tree, string key)
+        public override JsonNode Remove(JsonNode tree, string key)
         {
             if ("[]" != key)
             {
@@ -60,13 +61,13 @@ namespace Jolt.Net
             return null;
         }
 
-        public override JToken OverwriteSet(JToken tree, string key, JToken data)
+        public override JsonNode OverwriteSet(JsonNode tree, string key, JsonNode data)
         {
             if ("[]" != key)
             {
                 throw new TraversrException("AutoExpandArrayTraversal expects a '[]' key. Was: " + key);
             }
-            var list = (JArray)tree;
+            var list = (JsonArray)tree;
             list.Add(data);
             return data;
         }

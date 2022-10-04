@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
 namespace Jolt.Net.Functions.Strings
 {
     public abstract class StringFunction : SingleFunction
     {
-        protected override JToken ApplySingle(JToken arg)
+        protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type != JTokenType.String)
+            if (arg.Type != JsonNodeType.String)
             {
                 return null;
             }
@@ -55,7 +56,7 @@ namespace Jolt.Net.Functions.Strings
 
     public class Concat : ListFunction
     {
-        protected override JToken ApplyList(JArray argList)
+        protected override JsonNode ApplyList(JsonArray argList)
         {
             var sb = new StringBuilder();
             foreach (var arg in argList)
@@ -71,7 +72,7 @@ namespace Jolt.Net.Functions.Strings
 
     public class Substring : ListFunction
     {
-        protected override JToken ApplyList(JArray argList)
+        protected override JsonNode ApplyList(JsonArray argList)
         {
             // if argList is null or not the right size; bail
             if (argList == null || argList.Count != 3)
@@ -79,9 +80,9 @@ namespace Jolt.Net.Functions.Strings
                 return null;
             }
 
-            if (!(argList[0].Type == JTokenType.String &&
-                  argList[1].Type == JTokenType.Integer &&
-                  argList[2].Type == JTokenType.Integer))
+            if (!(argList[0].Type == JsonNodeType.String &&
+                  argList[1].Type == JsonNodeType.Integer &&
+                  argList[2].Type == JsonNodeType.Integer))
             {
                 return null;
             }
@@ -103,7 +104,7 @@ namespace Jolt.Net.Functions.Strings
 
     public class Join : ArgDrivenStringListFunction
     {
-        protected override JToken ApplyList(string specialArg, JArray args)
+        protected override JsonNode ApplyList(string specialArg, JsonArray args)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < args.Count; ++i)
@@ -128,25 +129,25 @@ namespace Jolt.Net.Functions.Strings
 
     public class Split : ArgDrivenSingleStringFunction
     {
-        protected override JToken ApplySingle(string separator, JToken source)
+        protected override JsonNode ApplySingle(string separator, JsonNode source)
         {
-            if (source == null || separator == null || source.Type != JTokenType.String)
+            if (source == null || separator == null || source.Type != JsonNodeType.String)
             {
                 return null;
             }
             // only try to split input strings
             string inputString = source.ToString();
-            return new JArray(Regex.Split(inputString, separator));
+            return new JsonArray(Regex.Split(inputString, separator));
         }
     }
 
     public abstract class PadFunction : ArgDrivenStringListFunction
     {
-        protected static JToken PadString(bool leftPad, string source, JArray args)
+        protected static JsonNode PadString(bool leftPad, string source, JsonArray args)
         {
             if (source == null || args == null || args.Count < 2 ||
-                !(args[0].Type == JTokenType.Integer &&
-                  args[1].Type == JTokenType.String))
+                !(args[0].Type == JsonNodeType.Integer &&
+                  args[1].Type == JsonNodeType.String))
             {
                 return null;
             }
@@ -194,7 +195,7 @@ namespace Jolt.Net.Functions.Strings
 
     public class LeftPad : PadFunction
     {
-        protected override JToken ApplyList(string source, JArray args)
+        protected override JsonNode ApplyList(string source, JsonArray args)
         {
             return PadString(true, source, args);
         }
@@ -202,7 +203,7 @@ namespace Jolt.Net.Functions.Strings
 
     public class RightPad : PadFunction
     {
-        protected override JToken ApplyList(string source, JArray args)
+        protected override JsonNode ApplyList(string source, JsonArray args)
         {
             return PadString(false, source, args);
         }

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
+
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -28,9 +30,9 @@ namespace Jolt.Net
     public abstract class TraversalBuilder<T>
         where T : PathEvaluatingTraversal
     {
-        public T Build(JToken rawObj)
+        public T Build(JsonNode rawObj)
         {
-            if (!(rawObj is JToken rhsToken) || rhsToken.Type != JTokenType.String)
+            if (!(rawObj is JsonNode rhsToken) || rhsToken.Type != JsonNodeType.String)
             {
                 throw new SpecException("Invalid spec, RHS should be a string or array of Strings. Value in question : " + rawObj);
             }

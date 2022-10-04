@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -25,7 +26,7 @@ namespace Jolt.Net
         private List<int> _keyInts;
         private int _keyInt = -1;
 
-        public ArrayKey(string jsonKey, JToken spec) :
+        public ArrayKey(string jsonKey, JsonNode spec) :
             base(jsonKey, spec)
         {
             // Handle ArrayKey specific stuff
@@ -54,9 +55,9 @@ namespace Jolt.Net
 
         protected override int GetLiteralIntKey() => _keyInt;
 
-        protected override void ApplyChild(JToken container)
+        protected override void ApplyChild(JsonNode container)
         {
-            if (container is JArray defaultList)
+            if (container is JsonArray defaultList)
             {
                 // Find all defaultee keys that match the childKey spec.  Simple for Literal keys, more work for * and |.
                 foreach (int literalKey in DetermineMatchingContainerKeys(defaultList))
@@ -68,20 +69,20 @@ namespace Jolt.Net
             //  the Container vs the Defaultr Spec type for this key.  Container wins, so do nothing.
         }
 
-        private void ApplyLiteralKeyToContainer(int literalIndex, JArray container)
+        private void ApplyLiteralKeyToContainer(int literalIndex, JsonArray container)
         {
-            JToken defaulteeValue = container[literalIndex];
+            JsonNode defaulteeValue = container[literalIndex];
 
             if (_children == null)
             {
-                if (defaulteeValue.Type == JTokenType.Null)
+                if (defaulteeValue.Type == JsonNodeType.Null)
                 {
                     container[literalIndex] = _literalValue.DeepClone();  // apply a copy of the default value into a List, assumes the list as already been expanded if needed.
                 }
             }
             else
             {
-                if (defaulteeValue.Type == JTokenType.Null)
+                if (defaulteeValue.Type == JsonNodeType.Null)
                 {
                     defaulteeValue = CreateOutputContainerObject();
                     container[literalIndex] = defaulteeValue; // push a new sub-container into this list
@@ -92,7 +93,7 @@ namespace Jolt.Net
             }
         }
 
-        private List<int> DetermineMatchingContainerKeys(JToken container)
+        private List<int> DetermineMatchingContainerKeys(JsonNode container)
         {
             switch (GetOp())
             {
@@ -102,7 +103,7 @@ namespace Jolt.Net
                 case OPS.STAR:
                     // Identify all its keys
                     // this assumes the container list has already been expanded to the right size
-                    var defaultList = (JArray)container;
+                    var defaultList = (JsonArray)container;
                     var allIndexes = new List<int>(defaultList.Count);
                     for (int index = 0; index < defaultList.Count; index++)
                     {
@@ -112,7 +113,7 @@ namespace Jolt.Net
                 case OPS.OR:
                     // Identify the intersection between the container "keys" and the OR values
                     var indexesInRange = new List<int>();
-                    int count = ((JArray)container).Count;
+                    int count = ((JsonArray)container).Count;
 
                     foreach (int orValue in _keyInts)
                     {

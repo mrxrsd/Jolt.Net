@@ -15,9 +15,10 @@
  */
 
 using Jolt.Net.Functions;
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -46,9 +47,9 @@ namespace Jolt.Net
             _functionArgs = functionArgs;
         }
 
-        public JToken Evaluate(JToken inputOptional, WalkedPath walkedPath, JObject context)
+        public JsonNode Evaluate(JsonNode inputOptional, WalkedPath walkedPath, JsonObject context)
         {
-            JToken valueOptional = null;
+            JsonNode valueOptional = null;
             try
             {
                 // "key": "@0", "key": literal
@@ -93,9 +94,9 @@ namespace Jolt.Net
 
         }
 
-        private static JToken[] EvaluateArgsValue(FunctionArg[] functionArgs, JObject context, WalkedPath walkedPath)
+        private static JsonNode[] EvaluateArgsValue(FunctionArg[] functionArgs, JsonObject context, WalkedPath walkedPath)
         {
-            JToken[] evaluatedArgs = new JToken[functionArgs.Length];
+            JsonNode[] evaluatedArgs = new JsonNode[functionArgs.Length];
             for (int i = 0; i < functionArgs.Length; i++)
             {
                 FunctionArg arg = functionArgs[i];

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -46,12 +47,12 @@ namespace Jolt.Net
         public const string SPEC_KEY = "spec";
 
         private readonly int _index;
-        private readonly JToken _spec;
+        private readonly JsonNode _spec;
 
         private readonly Type _joltTransformType;
         private readonly bool _isSpecDriven;
 
-        public JToken ChainrEntryObj { get; }
+        public JsonNode ChainrEntryObj { get; }
 
         /**
          * Process an element from the Chainr Spec into a ChainrEntry class.
@@ -61,9 +62,9 @@ namespace Jolt.Net
          * @param chainrEntryObj the unknown object from the Chainr list
          * @param index the index of the chainrEntryObj, used in reporting errors
          */
-        public ChainrEntry(int index, JToken chainrEntryObj, IReadOnlyDictionary<string, Type> transforms)
+        public ChainrEntry(int index, JsonNode chainrEntryObj, IReadOnlyDictionary<string, Type> transforms)
         {
-            if (!(chainrEntryObj is JObject chainrEntryMap))
+            if (!(chainrEntryObj is JsonObject chainrEntryMap))
             {
                 throw new SpecException("JOLT ChainrEntry expects a JSON map - Malformed spec" + GetErrorMessageIndexSuffix());
             }
@@ -98,13 +99,13 @@ namespace Jolt.Net
             }
         }
 
-        private string ExtractOperationString(JObject chainrEntryMap)
+        private string ExtractOperationString(JsonObject chainrEntryMap)
         {
             if (!chainrEntryMap.TryGetValue(ChainrEntry.OPERATION_KEY, out var operationNameObj))
             {
                 return null;
             }
-            else if (operationNameObj.Type == JTokenType.String)
+            else if (operationNameObj.Type == JsonNodeType.String)
             {
                 var s = operationNameObj.ToString();
                 if (String.IsNullOrWhiteSpace(s))
@@ -130,7 +131,7 @@ namespace Jolt.Net
         /**
          * @return Spec for the transform, can be null
          */
-        public JToken GetSpec() => _spec;
+        public JsonNode GetSpec() => _spec;
 
         /**
          * @return Class instance specified by this ChainrEntry

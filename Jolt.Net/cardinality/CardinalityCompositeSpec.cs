@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -39,7 +40,7 @@ namespace Jolt.Net
         private readonly IReadOnlyDictionary<string, CardinalitySpec> _literalChildren;  // children that are simple exact matches against the input data
         private readonly IReadOnlyList<CardinalitySpec> _computedChildren;        // children that are regex matches against the input data
 
-        public CardinalityCompositeSpec(string rawKey, JObject spec) :
+        public CardinalityCompositeSpec(string rawKey, JsonObject spec) :
             base(rawKey)
         {
             var literals = new Dictionary<string, CardinalitySpec>();
@@ -99,7 +100,7 @@ namespace Jolt.Net
         /**
          * Recursively walk the spec input tree.
          */
-        private static List<CardinalitySpec> CreateChildren(JObject rawSpec)
+        private static List<CardinalitySpec> CreateChildren(JsonObject rawSpec)
         {
             var children = new List<CardinalitySpec>();
             var actualKeys = new HashSet<string>();
@@ -107,9 +108,9 @@ namespace Jolt.Net
             foreach (var kv in rawSpec)
             {
                 CardinalitySpec childSpec;
-                if (kv.Value.Type == JTokenType.Object)
+                if (kv.Value.Type == JsonNodeType.Object)
                 {
-                    childSpec = new CardinalityCompositeSpec(kv.Key, (JObject)kv.Value);
+                    childSpec = new CardinalityCompositeSpec(kv.Key, (JsonObject)kv.Value);
                 }
                 else
                 {
@@ -143,7 +144,7 @@ namespace Jolt.Net
          *
          * @return true if this this spec "handles" the inputkey such that no sibling specs need to see it
          */
-        public override bool ApplyCardinality(string inputKey, JToken input, WalkedPath walkedPath, JToken parentContainer)
+        public override bool ApplyCardinality(string inputKey, JsonNode input, WalkedPath walkedPath, JsonNode parentContainer)
         {
             MatchedElement thisLevel = GetPathElement().Match(inputKey, walkedPath);
             if (thisLevel == null)
@@ -167,21 +168,21 @@ namespace Jolt.Net
             return true;
         }
 
-        private void Process(JToken input, WalkedPath walkedPath)
+        private void Process(JsonNode input, WalkedPath walkedPath)
         {
-            if (input?.Type == JTokenType.Object)
+            if (input?.Type == JsonNodeType.Object)
             {
                 // Iterate over the whole entrySet rather than the keyset with follow on gets of the values
                 // (because the collection is modified by the recursive call)
-                var obj = (JObject)input;
-                foreach (var kv in obj.ToList<KeyValuePair<string, JToken>>())
+                var obj = (JsonObject)input;
+                foreach (var kv in obj.ToList<KeyValuePair<string, JsonNode>>())
                 {
                     ApplyKeyToLiteralAndComputed(this, kv.Key, kv.Value, walkedPath, input);
                 }
             }
-            else if (input?.Type == JTokenType.Array)
+            else if (input?.Type == JsonNodeType.Array)
             {
-                var list = (JArray)input;
+                var list = (JsonArray)input;
                 for (int index = 0; index < list.Count; index++)
                 {
                     var subInput = list[index];
@@ -204,7 +205,7 @@ namespace Jolt.Net
          * <p/>
          * For each input key, we see if it matches a literal, and it not, try to match the key with every computed child.
          */
-        private static void ApplyKeyToLiteralAndComputed(CardinalityCompositeSpec spec, string subKeyStr, JToken subInput, WalkedPath walkedPath, JToken input)
+        private static void ApplyKeyToLiteralAndComputed(CardinalityCompositeSpec spec, string subKeyStr, JsonNode subInput, WalkedPath walkedPath, JsonNode input)
         {
             // if the subKeyStr found a literalChild, then we do not have to try to match any of the computed ones
             if (spec._literalChildren.TryGetValue(subKeyStr, out var literalChild))

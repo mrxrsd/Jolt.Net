@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -35,21 +36,21 @@ namespace Jolt.Net
          *
          * @return data object if available, or null.
          */
-        JToken Get(JToken tree, string key);
+        JsonNode Get(JsonNode tree, string key);
 
         /**
          * Remove and return the data for the key from the provided tree object.
          *
          * @return data object if available, or null.
          */
-        JToken Remove(JToken tree, string key);
+        JsonNode Remove(JsonNode tree, string key);
 
         /**
          * Insert the data into the tree, overwriting any data that is there.
          *
          * @return returns the data object if successful or null if it could not
          */
-        JToken OverwriteSet(JToken tree, string key, JToken data);
+        JsonNode OverwriteSet(JsonNode tree, string key, JsonNode data);
 
         /**
          * @return the child Traversal or null if this Traversal has no child
@@ -61,7 +62,7 @@ namespace Jolt.Net
          *
          * @return new List or Map, depending on the type of the Traversal
          */
-        JToken NewContainer();
+        JsonNode NewContainer();
 
         /**
          * Return the Class of the Generic T, so that it can be used in an
@@ -83,7 +84,7 @@ namespace Jolt.Net
          * @param data the data to place if the operation is SET
          * @return if SET, null for fail or the "data" object for ok.  if GET, PANTS
          */
-        JToken Traverse(JToken tree, TraversalStepOperation op, IEnumerator<string> keys, JToken data);
+        JsonNode Traverse(JsonNode tree, TraversalStepOperation op, IEnumerator<string> keys, JsonNode data);
     }
 
 }

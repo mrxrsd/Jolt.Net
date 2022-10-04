@@ -14,10 +14,11 @@
 * limitations under the License.
 */
 
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Jolt.Net
 {
@@ -49,7 +50,7 @@ namespace Jolt.Net
     {
         private readonly IReadOnlyList<RemovrSpec> _allChildNodes;
 
-        public RemovrCompositeSpec(string rawKey, JObject spec) :
+        public RemovrCompositeSpec(string rawKey, JsonObject spec) :
             base(rawKey)
         {
             var all = new List<RemovrSpec>();
@@ -60,11 +61,11 @@ namespace Jolt.Net
                 foreach (string keyString in keyStrings)
                 {
                     RemovrSpec childSpec;
-                    if (kv.Value is JObject dic)
+                    if (kv.Value is JsonObject dic)
                     {
                         childSpec = new RemovrCompositeSpec(keyString, dic);
                     }
-                    else if (kv.Value.Type == JTokenType.String && String.IsNullOrWhiteSpace(kv.Value.ToString()))
+                    else if (kv.Value.Type == JsonNodeType.String && String.IsNullOrWhiteSpace(kv.Value.ToString()))
                     {
                         childSpec = new RemovrLeafSpec(keyString);
                     }
@@ -78,7 +79,7 @@ namespace Jolt.Net
             _allChildNodes = all.AsReadOnly();
         }
 
-        public override List<string> ApplyToMap(JObject inputMap)
+        public override List<string> ApplyToMap(JsonObject inputMap)
         {
             if (_pathElement is LiteralPathElement)
             {
@@ -102,7 +103,7 @@ namespace Jolt.Net
             return new List<string>();
         }
 
-        public override IEnumerable<int> ApplyToList(JArray inputList)
+        public override IEnumerable<int> ApplyToList(JsonArray inputList)
         {
             // If the input is a List, the only thing that will match is a Literal or a "*"
             if (_pathElement is LiteralPathElement)
@@ -132,11 +133,11 @@ namespace Jolt.Net
          * Call our child nodes, build up the set of keys or indices to actually remove, and then
          *  remove them.
          */
-        private void ProcessChildren(IReadOnlyList<RemovrSpec> children, JToken subInput)
+        private void ProcessChildren(IReadOnlyList<RemovrSpec> children, JsonNode subInput)
         {
             if (subInput != null)
             {
-                if (subInput is JArray subList)
+                if (subInput is JsonArray subList)
                 {
                     var indiciesToRemove = new HashSet<int>();
 
@@ -161,7 +162,7 @@ namespace Jolt.Net
                         subList.RemoveAt(index);
                     }
                 }
-                else if (subInput is JObject subInputMap)
+                else if (subInput is JsonObject subInputMap)
                 {
                     var keysToRemove = new List<string>();
 

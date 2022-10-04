@@ -15,12 +15,13 @@
  */
 
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using Jolt.Net.Functions;
 using Jolt.Net.Functions.Lists;
 using Jolt.Net.Functions.Math;
 using Jolt.Net.Functions.Objects;
 using Jolt.Net.Functions.Strings;
-using Newtonsoft.Json.Linq;
+
 
 namespace Jolt.Net
 {
@@ -78,7 +79,7 @@ namespace Jolt.Net
 
         private readonly ModifierCompositeSpec _rootSpec;
 
-        private Modifier(JObject spec, OpMode opMode, IReadOnlyDictionary<string, IFunction> functionsMap)
+        private Modifier(JsonObject spec, OpMode opMode, IReadOnlyDictionary<string, IFunction> functionsMap)
         {
             if (spec == null)
             {
@@ -94,9 +95,9 @@ namespace Jolt.Net
             _rootSpec = new ModifierCompositeSpec(ROOT_KEY, spec, opMode, templatrSpecBuilder);
         }
 
-        public JToken Transform(JToken input, JObject context)
+        public JsonNode Transform(JsonNode input, JsonObject context)
         {
-            var contextWrapper = new JObject();
+            var contextWrapper = new JsonObject();
             contextWrapper.Add(ROOT_KEY, context);
 
             MatchedElement rootLpe = new MatchedElement(ROOT_KEY);
@@ -113,13 +114,13 @@ namespace Jolt.Net
          */
         public class Overwritr : Modifier
         {
-            public Overwritr(JObject spec) :
+            public Overwritr(JsonObject spec) :
                 this(spec, Modifier.STOCK_FUNCTIONS)
             {
 
             }
 
-            public Overwritr(JObject spec, IReadOnlyDictionary<string, IFunction> functionsMap) :
+            public Overwritr(JsonObject spec, IReadOnlyDictionary<string, IFunction> functionsMap) :
                 base(spec, OpMode.OVERWRITR, functionsMap)
             {
             }
@@ -130,13 +131,13 @@ namespace Jolt.Net
          */
         public class Definr : Modifier
         {
-            public Definr(JObject spec) :
+            public Definr(JsonObject spec) :
                 this(spec, Modifier.STOCK_FUNCTIONS)
             {
 
             }
 
-            public Definr(JObject spec, IReadOnlyDictionary<string, IFunction> functionsMap) :
+            public Definr(JsonObject spec, IReadOnlyDictionary<string, IFunction> functionsMap) :
                 base(spec, OpMode.DEFINER, functionsMap)
             {
             }
@@ -147,13 +148,13 @@ namespace Jolt.Net
          */
         public class Defaultr : Modifier
         {
-            public Defaultr(JObject spec) :
+            public Defaultr(JsonObject spec) :
                 this(spec, Modifier.STOCK_FUNCTIONS)
             {
 
             }
 
-            public Defaultr(JObject spec, IReadOnlyDictionary<string, IFunction> functionsMap) :
+            public Defaultr(JsonObject spec, IReadOnlyDictionary<string, IFunction> functionsMap) :
                 base(spec, OpMode.DEFAULTR, functionsMap)
             {
             }
