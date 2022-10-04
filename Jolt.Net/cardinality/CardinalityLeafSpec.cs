@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -94,9 +96,9 @@ namespace Jolt.Net
                 {
                     returnValue = input;
                 }
-                else if (input.Type == JsonNodeType.Object || input.Type == JsonNodeType.String || 
-                         input.Type == JsonNodeType.Integer || input.Type == JsonNodeType.Float || 
-                         input.Type == JsonNodeType.Boolean)
+                else if (input.GetNodeKind() == JsonValueKind.Object || input.GetNodeKind() == JsonValueKind.String || 
+                         input.GetNodeKind() == JsonValueKind.Number || input.GetNodeKind() == JsonValueKind.True || 
+                         input.GetNodeKind() == JsonValueKind.False)
                 {
                     var one = parentContainer[inputKey];
                     parentContainer.Remove(inputKey);
@@ -104,7 +106,7 @@ namespace Jolt.Net
                     tempList.Add(one);
                     returnValue = tempList;
                 }
-                else if (input.Type == JsonNodeType.Null)
+                else if (input.GetNodeKind() == JsonValueKind.Null)
                 {
                     returnValue = new JsonArray();
                 }

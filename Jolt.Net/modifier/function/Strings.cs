@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
@@ -26,7 +28,7 @@ namespace Jolt.Net.Functions.Strings
     {
         protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type != JsonNodeType.String)
+            if (arg.GetNodeKind() != JsonValueKind.String)
             {
                 return null;
             }
@@ -80,9 +82,9 @@ namespace Jolt.Net.Functions.Strings
                 return null;
             }
 
-            if (!(argList[0].Type == JsonNodeType.String &&
-                  argList[1].Type == JsonNodeType.Integer &&
-                  argList[2].Type == JsonNodeType.Integer))
+            if (!(argList[0].GetNodeKind() == JsonValueKind.String &&
+                  argList[1].GetNodeKind() == JsonValueKind.Integer &&
+                  argList[2].GetNodeKind() == JsonValueKind.Integer))
             {
                 return null;
             }
@@ -131,7 +133,7 @@ namespace Jolt.Net.Functions.Strings
     {
         protected override JsonNode ApplySingle(string separator, JsonNode source)
         {
-            if (source == null || separator == null || source.Type != JsonNodeType.String)
+            if (source == null || separator == null || source.GetNodeKind() != JsonValueKind.String)
             {
                 return null;
             }
@@ -146,8 +148,8 @@ namespace Jolt.Net.Functions.Strings
         protected static JsonNode PadString(bool leftPad, string source, JsonArray args)
         {
             if (source == null || args == null || args.Count < 2 ||
-                !(args[0].Type == JsonNodeType.Integer &&
-                  args[1].Type == JsonNodeType.String))
+                !(args[0].GetNodeKind() == JsonValueKind.Integer &&
+                  args[1].GetNodeKind() == JsonValueKind.String))
             {
                 return null;
             }

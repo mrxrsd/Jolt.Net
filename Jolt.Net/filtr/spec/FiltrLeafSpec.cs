@@ -1,7 +1,9 @@
 ﻿
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
@@ -46,7 +48,7 @@ namespace Jolt.Net
         {
             _filters = filters.Select(x =>
                 new KeyValuePair<string, IValueFiltr>(x.Key,
-                    x.Value.Type == JsonNodeType.String ? (IValueFiltr)
+                    x.Value.GetNodeKind() == JsonValueKind.String ? (IValueFiltr)
                         new RegexFiltr(x.Value.Value<string>()) :
                         new ValueFiltr(x.Value))).ToList().AsReadOnly();
         }

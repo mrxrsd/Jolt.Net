@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 
@@ -26,12 +28,12 @@ namespace Jolt.Net.Functions.Objects
     {
         protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.Integer ||
-                arg.Type == JsonNodeType.Float)
+            if (arg.GetNodeKind() == JsonValueKind.Integer ||
+                arg.GetNodeKind() == JsonValueKind.Float)
             {
                 return arg.Value<int>();
             }
-            if (arg.Type == JsonNodeType.String &&
+            if (arg.GetNodeKind() == JsonValueKind.String &&
                 Int32.TryParse(arg.Value<string>(), out var intVal))
             {
                 return intVal;
@@ -44,12 +46,12 @@ namespace Jolt.Net.Functions.Objects
     {
         protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.Integer ||
-                arg.Type == JsonNodeType.Float)
+            if (arg.GetNodeKind() == JsonValueKind.Integer ||
+                arg.GetNodeKind() == JsonValueKind.Float)
             {
                 return arg.Value<long>();
             }
-            if (arg.Type == JsonNodeType.String &&
+            if (arg.GetNodeKind() == JsonValueKind.String &&
                 Int64.TryParse(arg.Value<string>(), out var longVal))
             {
                 return longVal;
@@ -62,12 +64,12 @@ namespace Jolt.Net.Functions.Objects
     {
         protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.Integer ||
-                arg.Type == JsonNodeType.Float)
+            if (arg.GetNodeKind() == JsonValueKind.Integer ||
+                arg.GetNodeKind() == JsonValueKind.Float)
             {
                 return arg.Value<double>();
             }
-            if (arg.Type == JsonNodeType.String &&
+            if (arg.GetNodeKind() == JsonValueKind.String &&
                 Double.TryParse(arg.Value<string>(), out var doubleVal))
             {
                 return doubleVal;
@@ -80,11 +82,11 @@ namespace Jolt.Net.Functions.Objects
     {
         protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.Boolean)
+            if (arg.GetNodeKind() == JsonValueKind.Boolean)
             {
                 return arg;
             }
-            if (arg.Type == JsonNodeType.String)
+            if (arg.GetNodeKind() == JsonValueKind.String)
             {
                 string s = arg.Value<string>();
                 if (s.Equals("true", StringComparison.OrdinalIgnoreCase))
@@ -104,11 +106,11 @@ namespace Jolt.Net.Functions.Objects
     {
         private string TokenToString(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.String)
+            if (arg.GetNodeKind() == JsonValueKind.String)
             {
                 return arg.Value<string>();
             }
-            if (arg.Type == JsonNodeType.Array)
+            if (arg.GetNodeKind() == JsonValueKind.Array)
             {
                 var sb = new StringBuilder();
                 sb.Append("[");
@@ -124,7 +126,7 @@ namespace Jolt.Net.Functions.Objects
 
         protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.String)
+            if (arg.GetNodeKind() == JsonValueKind.String)
             {
                 return arg;
             }
@@ -159,24 +161,24 @@ namespace Jolt.Net.Functions.Objects
     {
         public static JsonNode Squash(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.Array)
+            if (arg.GetNodeKind() == JsonValueKind.Array)
             {
                 var arr = (JsonArray)arg;
                 for (int i = 0; i < arr.Count;)
                 {
-                    if (arr[i].Type == JsonNodeType.Null)
+                    if (arr[i].GetNodeKind() == JsonValueKind.Null)
                         arr.RemoveAt(i);
                     else
                         ++i;
                 }
             }
-            else if (arg.Type == JsonNodeType.Object)
+            else if (arg.GetNodeKind() == JsonValueKind.Object)
             {
                 var obj = (JsonObject)arg;
                 var newObj = new JsonObject();
                 foreach (var kv in obj)
                 {
-                    if (kv.Value.Type != JsonNodeType.Null)
+                    if (kv.Value.GetNodeKind() != JsonValueKind.Null)
                     {
                         newObj.Add(kv.Key, kv.Value);
                     }
@@ -197,7 +199,7 @@ namespace Jolt.Net.Functions.Objects
             // Makes two passes thru the data.
             arg = SquashNulls.Squash(arg);
 
-            if (arg.Type == JsonNodeType.Array)
+            if (arg.GetNodeKind() == JsonValueKind.Array)
             {
                 var arr = (JsonArray)arg;
                 for (int i = 0; i < arr.Count; ++i)
@@ -205,7 +207,7 @@ namespace Jolt.Net.Functions.Objects
                     arr[i] = Squash(arr[i]);
                 }
             }
-            else if (arg.Type == JsonNodeType.Object)
+            else if (arg.GetNodeKind() == JsonValueKind.Object)
             {
                 var obj = (JsonObject)arg;
                 foreach (var kv in obj)
@@ -238,15 +240,15 @@ namespace Jolt.Net.Functions.Objects
                 {
                     return null;
                 }
-                if (args[0].Type == JsonNodeType.Array)
+                if (args[0].GetNodeKind() == JsonValueKind.Array)
                 {
                     return ((JsonArray)args[0]).Count;
                 }
-                if (args[0].Type == JsonNodeType.String)
+                if (args[0].GetNodeKind() == JsonValueKind.String)
                 {
                     return args[0].ToString().Length;
                 }
-                if (args[0].Type == JsonNodeType.Object)
+                if (args[0].GetNodeKind() == JsonValueKind.Object)
                 {
                     return ((JsonObject)args[0]).Count;
                 }

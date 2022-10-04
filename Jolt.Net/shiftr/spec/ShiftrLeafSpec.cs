@@ -46,7 +46,7 @@ namespace Jolt.Net
             base(rawKey)
         {
             List<PathEvaluatingTraversal> writers;
-            if (rhs.Type == JsonNodeType.String)
+            if (rhs.Type == JsonValueKind.String)
             {
                 // leaf level so spec is an dot notation write path
                 writers = new List<PathEvaluatingTraversal>();
@@ -62,7 +62,7 @@ namespace Jolt.Net
                     writers.Add(TRAVERSAL_BUILDER.Build(dotNotation));
                 }
             }
-            else if (rhs.Type == JsonNodeType.Null)
+            else if (rhs.Type == JsonValueKind.Null)
             {
                 // this means someone wanted to match something, but not send it anywhere.  Basically like a removal.
                 writers = new List<PathEvaluatingTraversal>();

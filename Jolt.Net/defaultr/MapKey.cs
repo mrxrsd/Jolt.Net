@@ -52,7 +52,7 @@ namespace Jolt.Net
             if (_children == null)
             {
                 if (defaulteeValue == null ||
-                    defaulteeValue.Type == JsonNodeType.Null)
+                    defaulteeValue.GetNodeKind() == JsonValueKind.Null)
                 {
                     container[literalKey] = _literalValue; // apply a copy of the default value into a map
                 }
@@ -60,7 +60,7 @@ namespace Jolt.Net
             else
             {
                 if (defaulteeValue == null ||
-                    defaulteeValue.Type == JsonNodeType.Null)
+                    defaulteeValue.Type == JsonValueKind.Null)
                 {
                     defaulteeValue = CreateOutputContainerObject();
                     container[literalKey] = defaulteeValue;  // push a new sub-container into this map

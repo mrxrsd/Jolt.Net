@@ -15,8 +15,10 @@
  */
 
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -52,7 +54,7 @@ namespace Jolt.Net
             {
                 return "null";
             }
-            if (token.Type == JsonNodeType.Boolean)
+            if (token.GetNodeKind() == JsonValueKind.True || token.GetNodeKind() == JsonValueKind.False)
             {
                 return token.Value<bool>() ? "true" : "false";
             }
@@ -69,7 +71,7 @@ namespace Jolt.Net
             {
                 ProcessList(spec, list, walkedPath, output, context);
             }
-            else if (input != null && input.Type != JsonNodeType.Null)
+            else if (input != null && input.GetNodeKind() != JsonValueKind.Null)
             {
                 // if not a map or list, must be a scalar
                 ProcessScalar(spec, ToString(input), walkedPath, output, context);
@@ -207,7 +209,7 @@ namespace Jolt.Net
                     // if the input in not available in the list use null or else get value,
                     // then lookup and place a default value as defined in spec there
                     JsonNode subInput = inputList[keyInt];
-                    if ( (subInput != null && subInput.Type != JsonNodeType.Null) |
+                    if ( (subInput != null && subInput.GetNodeKind() != JsonValueKind.Null) |
                          !originalSize.HasValue || keyInt < originalSize.Value )
                     {
                         subInputOptional = subInput;

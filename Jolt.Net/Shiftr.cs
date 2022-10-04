@@ -15,8 +15,10 @@
  */
 
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -473,9 +475,9 @@ namespace Jolt.Net
             {
                 throw new SpecException("Shiftr expected a spec of Map type, got 'null'.");
             }
-            if (spec.Type != JsonNodeType.Object)
+            if (spec.GetNodeKind() != JsonValueKind.Object)
             {
-                throw new SpecException("Shiftr expected a spec of Map type, got " + spec.Type.ToString());
+                throw new SpecException("Shiftr expected a spec of Map type, got " + spec.GetNodeKind().ToString());
             }
 
             _rootSpec = new ShiftrCompositeSpec(ROOT_KEY, (JsonObject)spec);

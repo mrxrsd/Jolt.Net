@@ -15,8 +15,10 @@
  */
 
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -138,7 +140,7 @@ namespace Jolt.Net
 
         public override bool IsCompatible(JsonNode input)
         {
-            return input == null || input.Type == JsonNodeType.Null || input is JsonArray;
+            return input == null || input.GetNodeKind() == JsonValueKind.Null || input is JsonArray;
         }
     }
 
@@ -150,7 +152,7 @@ namespace Jolt.Net
         protected override JsonNode CreateValue() => new JsonObject();
 
         public override bool IsCompatible(JsonNode input) =>
-            input == null || input.Type == JsonNodeType.Null || input is JsonObject;
+            input == null || input.GetNodeKind() == JsonValueKind.Null || input is JsonObject;
     }
 
     /**
@@ -159,7 +161,7 @@ namespace Jolt.Net
     public class RUNTIME : DataType
     {
         public override bool IsCompatible(JsonNode input) =>
-            input != null && input.Type != JsonNodeType.Null;
+            input != null && input.Type != JsonValueKind.Null;
         protected override JsonNode CreateValue() =>
             throw new InvalidOperationException("Cannot create for RUNTIME Type");
     }

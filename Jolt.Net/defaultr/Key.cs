@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
@@ -105,7 +107,7 @@ namespace Jolt.Net
             }
 
             // Spec is string -> Map   or   string -> Literal only
-            if (spec.Type == JsonNodeType.Object)
+            if (spec.GetNodeKind() == JsonValueKind.Object)
             {
                 _children = ProcessSpec(IsArrayOutput(), (JsonObject)spec);
 

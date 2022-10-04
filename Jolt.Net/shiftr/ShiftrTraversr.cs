@@ -45,7 +45,7 @@ namespace Jolt.Net
         {
             var optSub = traversalStep.Get(tree, key);
 
-            if (optSub == null || optSub.Type == JsonNodeType.Null)
+            if (optSub == null || optSub.Type == JsonValueKind.Null)
             {
                 // nothing is here so just set the data
                 traversalStep.OverwriteSet(tree, key, data);

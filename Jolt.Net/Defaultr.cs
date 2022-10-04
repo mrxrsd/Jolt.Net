@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -231,7 +233,7 @@ namespace Jolt.Net
             }
 
             // TODO : Make copy of the defaultee or like shiftr create a new output object
-            if (input.Type == JsonNodeType.Array)
+            if (input.GetNodeKind() == JsonValueKind.Array)
             {
                 if (_arrayRoot == null)
                 {

@@ -14,7 +14,9 @@
 * limitations under the License.
 */
 
+using Jolt.Net.utils;
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net.Functions.Math
@@ -57,15 +59,15 @@ namespace Jolt.Net.Functions.Math
 
             foreach (var arg in input)
             {
-                if (arg.Type == JsonNodeType.Integer)
+                if (arg.GetNodeKind() == JsonValueKind.Integer)
                 {
                     curLong = _longCompareFn(curLong, arg.Value<long>());
                 }
-                else if (arg.Type == JsonNodeType.Float)
+                else if (arg.GetNodeKind() == JsonValueKind.Float)
                 {
                     curDouble = _doubleCompareFn(curDouble, arg.Value<double>());
                 }
-                else if (arg.Type == JsonNodeType.String)
+                else if (arg.GetNodeKind() == JsonValueKind.String)
                 {
                     string s = arg.Value<string>();
                     if (Int64.TryParse(s, out var longVal))
@@ -131,15 +133,15 @@ namespace Jolt.Net.Functions.Math
     {
         protected override JsonNode ApplySingle(JsonNode arg)
         {
-            if (arg.Type == JsonNodeType.Integer)
+            if (arg.GetNodeKind() == JsonValueKind.Integer)
             {
                 return System.Math.Abs(arg.Value<long>());
             }
-            if (arg.Type == JsonNodeType.Float)
+            if (arg.GetNodeKind() == JsonValueKind.Float)
             {
                 return System.Math.Abs(arg.Value<double>());
             }
-            if (arg.Type == JsonNodeType.String)
+            if (arg.GetNodeKind() == JsonValueKind.String)
             {
                 string s = arg.Value<string>();
                 if (Int64.TryParse(s, out var longVal))
@@ -170,12 +172,12 @@ namespace Jolt.Net.Functions.Math
             foreach (var arg in args)
             {
 
-                if (arg.Type == JsonNodeType.Integer || arg.Type == JsonNodeType.Float)
+                if (arg.GetNodeKind() == JsonValueKind.Integer || arg.GetNodeKind() == JsonValueKind.Float)
                 {
                     sum += arg.Value<double>();
                     ++count;
                 }
-                else if (arg.Type == JsonNodeType.String &&
+                else if (arg.GetNodeKind() == JsonValueKind.String &&
                          Double.TryParse(arg.Value<string>(), out var doubleVal))
                 {
                     sum += doubleVal;
@@ -197,12 +199,12 @@ namespace Jolt.Net.Functions.Math
             int sum = 0;
             foreach (var arg in args)
             {
-                if (arg.Type == JsonNodeType.Integer ||
-                    arg.Type == JsonNodeType.Float)
+                if (arg.GetNodeKind() == JsonValueKind.Integer ||
+                    arg.GetNodeKind() == JsonValueKind.Float)
                 {
                     sum += arg.Value<int>();
                 }
-                else if (arg.Type == JsonNodeType.String &&
+                else if (arg.GetNodeKind() == JsonValueKind.String &&
                          Double.TryParse(arg.Value<string>(), out var doubleVal))
                 {
                     sum += (int)doubleVal;
@@ -219,11 +221,11 @@ namespace Jolt.Net.Functions.Math
             long sum = 0;
             foreach (var arg in args)
             {
-                if (arg.Type == JsonNodeType.Integer || arg.Type == JsonNodeType.Float)
+                if (arg.GetNodeKind() == JsonValueKind.Integer || arg.GetNodeKind() == JsonValueKind.Float)
                 {
                     sum += arg.Value<long>();
                 }
-                else if (arg.Type == JsonNodeType.String &&
+                else if (arg.GetNodeKind() == JsonValueKind.String &&
                          Double.TryParse(arg.Value<string>(), out var doubleVal))
                 {
                     sum += (long)doubleVal;
@@ -240,11 +242,11 @@ namespace Jolt.Net.Functions.Math
             double sum = 0;
             foreach (var arg in args)
             {
-                if (arg.Type == JsonNodeType.Integer || arg.Type == JsonNodeType.Float)
+                if (arg.Type == JsonValueKind.Integer || arg.Type == JsonValueKind.Float)
                 {
                     sum += arg.Value<double>();
                 }
-                else if (arg.Type == JsonNodeType.String &&
+                else if (arg.Type == JsonValueKind.String &&
                          Double.TryParse(arg.Value<string>(), out var intVal))
                 {
                     sum += intVal;
@@ -259,8 +261,8 @@ namespace Jolt.Net.Functions.Math
         protected override JsonNode ApplyList(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                args[0].Type != JsonNodeType.Integer ||
-                args[1].Type != JsonNodeType.Integer)
+                args[0].GetNodeKind() != JsonValueKind.Integer ||
+                args[1].GetNodeKind() != JsonValueKind.Integer)
             {
                 return null;
             }
@@ -273,8 +275,8 @@ namespace Jolt.Net.Functions.Math
         protected override JsonNode ApplyList(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                args[0].Type != JsonNodeType.Integer ||
-                args[1].Type != JsonNodeType.Integer)
+                args[0].GetNodeKind() != JsonValueKind.Integer ||
+                args[1].GetNodeKind() != JsonValueKind.Integer)
             {
                 return null;
             }
@@ -287,11 +289,12 @@ namespace Jolt.Net.Functions.Math
         protected override JsonNode ApplyList(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                args[0].Type != JsonNodeType.Float ||
-                args[1].Type != JsonNodeType.Float)
+                args[0].GetNodeKind() != JsonValueKind.Float ||
+                args[1].GetNodeKind() != JsonValueKind.Float)
             {
                 return null;
             }
+            
             return args[0].Value<double>() - args[1].Value<double>();
         }
     }
@@ -301,8 +304,8 @@ namespace Jolt.Net.Functions.Math
         public static JsonNode DividePair(JsonArray args)
         {
             if (args == null || args.Count != 2 ||
-                (args[0].Type != JsonNodeType.Integer && args[0].Type != JsonNodeType.Float) ||
-                (args[1].Type != JsonNodeType.Integer && args[1].Type != JsonNodeType.Float))
+                (args[0].GetNodeKind() != JsonValueKind.Integer && args[0].GetNodeKind() != JsonValueKind.Float) ||
+                (args[1].GetNodeKind() != JsonValueKind.Integer && args[1].GetNodeKind() != JsonValueKind.Float))
             {
                 return null;
             }

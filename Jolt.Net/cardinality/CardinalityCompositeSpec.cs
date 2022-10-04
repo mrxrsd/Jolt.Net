@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -108,7 +110,7 @@ namespace Jolt.Net
             foreach (var kv in rawSpec)
             {
                 CardinalitySpec childSpec;
-                if (kv.Value.Type == JsonNodeType.Object)
+                if (kv.Value.GetNodeKind() == JsonValueKind.Object)
                 {
                     childSpec = new CardinalityCompositeSpec(kv.Key, (JsonObject)kv.Value);
                 }
@@ -170,7 +172,7 @@ namespace Jolt.Net
 
         private void Process(JsonNode input, WalkedPath walkedPath)
         {
-            if (input?.Type == JsonNodeType.Object)
+            if (input?.GetNodeKind() == JsonValueKind.Object)
             {
                 // Iterate over the whole entrySet rather than the keyset with follow on gets of the values
                 // (because the collection is modified by the recursive call)
@@ -180,7 +182,7 @@ namespace Jolt.Net
                     ApplyKeyToLiteralAndComputed(this, kv.Key, kv.Value, walkedPath, input);
                 }
             }
-            else if (input?.Type == JsonNodeType.Array)
+            else if (input?.GetNodeKind() == JsonValueKind.Array)
             {
                 var list = (JsonArray)input;
                 for (int index = 0; index < list.Count; index++)

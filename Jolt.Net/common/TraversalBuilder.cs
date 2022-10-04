@@ -16,6 +16,8 @@
 
 
 
+using Jolt.Net.utils;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -32,7 +34,7 @@ namespace Jolt.Net
     {
         public T Build(JsonNode rawObj)
         {
-            if (!(rawObj is JsonNode rhsToken) || rhsToken.Type != JsonNodeType.String)
+            if (!(rawObj is JsonNode rhsToken) || rhsToken.GetNodeKind() != JsonValueKind.String)
             {
                 throw new SpecException("Invalid spec, RHS should be a string or array of Strings. Value in question : " + rawObj);
             }

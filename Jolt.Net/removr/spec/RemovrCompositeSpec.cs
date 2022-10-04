@@ -65,7 +65,7 @@ namespace Jolt.Net
                     {
                         childSpec = new RemovrCompositeSpec(keyString, dic);
                     }
-                    else if (kv.Value.Type == JsonNodeType.String && String.IsNullOrWhiteSpace(kv.Value.ToString()))
+                    else if (kv.Value.Type == JsonValueKind.String && String.IsNullOrWhiteSpace(kv.Value.ToString()))
                     {
                         childSpec = new RemovrLeafSpec(keyString);
                     }

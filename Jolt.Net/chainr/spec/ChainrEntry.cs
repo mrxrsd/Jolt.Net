@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -105,7 +106,7 @@ namespace Jolt.Net
             {
                 return null;
             }
-            else if (operationNameObj.Type == JsonNodeType.String)
+            else if (operationNameObj.GetNodeKind() == JsonValueKind.String)
             {
                 var s = operationNameObj.ToString();
                 if (String.IsNullOrWhiteSpace(s))

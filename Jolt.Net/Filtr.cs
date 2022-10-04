@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -211,12 +213,12 @@ namespace Jolt.Net
                 }
                 if (!(kv.Value is JsonObject filterSpec))
                 {
-                    throw new SpecException($"Filtr object filter specification must be a JSON object (found {kv.Value.Type})");
+                    throw new SpecException($"Filtr object filter specification must be a JSON object (found {kv.Value.GetNodeKind()})");
                 }
                 var propFilters = new List<KeyValuePair<string, JsonNode>>();
                 foreach (var filterKv in filterSpec)
                 {
-                    if (filterKv.Value.Type == JsonNodeType.Array || filterKv.Value.Type == JsonNodeType.Object)
+                    if (filterKv.Value.GetNodeKind() == JsonValueKind.Array || filterKv.Value.GetNodeKind() == JsonValueKind.Object)
                     {
                         throw new SpecException($"Filter object filter specification must be a simple JSON value (string, number or null)");
                     }

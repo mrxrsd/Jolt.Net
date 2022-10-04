@@ -135,11 +135,11 @@ namespace Jolt.Net
             }
 
             // create input if it is null
-            if (input == null || input.Type == JsonNodeType.Null)
+            if (input == null || input.Type == JsonValueKind.Null)
             {
                 input = _specDataType.Create(inputKey, walkedPath, _opMode);
                 // if input has changed, wrap
-                if (input != null && input.Type != JsonNodeType.Null)
+                if (input != null && input.Type != JsonValueKind.Null)
                 {
                     inputOptional = input;
                 }

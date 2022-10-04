@@ -15,8 +15,10 @@
  */
 
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -75,14 +77,14 @@ namespace Jolt.Net
 
             if (_children == null)
             {
-                if (defaulteeValue.Type == JsonNodeType.Null)
+                if (defaulteeValue.GetNodeKind() == JsonValueKind.Null)
                 {
                     container[literalIndex] = _literalValue.DeepClone();  // apply a copy of the default value into a List, assumes the list as already been expanded if needed.
                 }
             }
             else
             {
-                if (defaulteeValue.Type == JsonNodeType.Null)
+                if (defaulteeValue.GetNodeKind() == JsonValueKind.Null)
                 {
                     defaulteeValue = CreateOutputContainerObject();
                     container[literalIndex] = defaulteeValue; // push a new sub-container into this list

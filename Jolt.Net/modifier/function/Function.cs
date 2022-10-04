@@ -16,6 +16,8 @@
 using System.Text.Json.Nodes;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using Jolt.Net.utils;
 
 namespace Jolt.Net.Functions
 {
@@ -153,7 +155,7 @@ namespace Jolt.Net.Functions
     {
         public JsonNode Apply(params JsonNode[] args)
         {
-            if (args.Length == 0 || args[0] == null || args[0].Type == JsonNodeType.Null)
+            if (args.Length == 0 || args[0] == null || args[0].GetNodeKind() == JsonValueKind.Null)
             {
                 return null;
             }
@@ -177,7 +179,7 @@ namespace Jolt.Net.Functions
     {
         public JsonNode Apply(params JsonNode[] args)
         {
-            if (args.Length == 0 || (args[0] != null && args[0].Type == JsonNodeType.Null))
+            if (args.Length == 0 || (args[0] != null && args[0].GetNodeKind() == JsonValueKind.Null))
             {
                 return null;
             }
@@ -332,7 +334,7 @@ namespace Jolt.Net.Functions
     {
         public static bool TryGetSpecialArg(IList<JsonNode> args, out int value)
         {
-            if (args.Count >= 2 && args[0].Type == JsonNodeType.Integer)
+            if (args.Count >= 2 && args[0].GetNodeKind() == JsonValueKind.Integer)
             {
                 value = args[0].Value<int>();
                 return true;
@@ -343,7 +345,7 @@ namespace Jolt.Net.Functions
 
         public static bool TryGetSpecialArg(IList<JsonNode> args, out string value)
         {
-            if (args.Count >= 2 && args[0].Type == JsonNodeType.String)
+            if (args.Count >= 2 && args[0].GetNodeKind() == JsonValueKind.String)
             {
                 value = args[0].ToString();
                 return true;

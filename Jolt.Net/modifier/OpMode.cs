@@ -15,7 +15,9 @@
  */
 
 
+using Jolt.Net.utils;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -119,13 +121,13 @@ namespace Jolt.Net
         public override bool IsApplicable(JsonObject source, string key)
         {
             return base.IsApplicable(source, key) &&
-                (!source.TryGetValue(key, out var value) || value == null || value.Type == JsonNodeType.Null);
+                (!source.TryGetValue(key, out var value) || value == null || value.GetNodeKind() == JsonValueKind.Null);
         }
 
         public override bool IsApplicable(JsonArray source, int reqIndex, int origSize)
         {
             return base.IsApplicable(source, reqIndex, origSize) && 
-                (source[reqIndex] == null || source[reqIndex].Type == JsonNodeType.Null);
+                (source[reqIndex] == null || source[reqIndex].GetNodeKind() == JsonValueKind.Null);
         }
     }
 
@@ -145,7 +147,7 @@ namespace Jolt.Net
         {
             return base.IsApplicable(source, reqIndex, origSize) &&
                     // only new index contains null
-                    reqIndex >= origSize && (source[reqIndex] == null || source[reqIndex].Type == JsonNodeType.Null);
+                    reqIndex >= origSize && (source[reqIndex] == null || source[reqIndex].GetNodeKind() == JsonValueKind.Null);
         }
     };
 }

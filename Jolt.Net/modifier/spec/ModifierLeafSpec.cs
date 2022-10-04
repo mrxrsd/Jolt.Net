@@ -15,9 +15,10 @@
  */
 
 using Jolt.Net.Functions;
-
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -33,7 +34,7 @@ namespace Jolt.Net
             FunctionEvaluator functionEvaluator;
 
             // "key": "expression1"
-            if (rhsObj.Type == JsonNodeType.String)
+            if (rhsObj.GetNodeKind() == JsonValueKind.String)
             {
                 string s = rhsObj.ToString();
                 functionEvaluator = BuildFunctionEvaluator(s, functionsMap);
@@ -44,7 +45,7 @@ namespace Jolt.Net
             {
                 foreach (var rhs in rhsList)
                 {
-                    if (rhs.Type == JsonNodeType.String)
+                    if (rhs.GetNodeKind() == JsonValueKind.String)
                     {
                         functionEvaluator = BuildFunctionEvaluator(rhs.ToString(), functionsMap);
                         _functionEvaluatorList.Add(functionEvaluator);

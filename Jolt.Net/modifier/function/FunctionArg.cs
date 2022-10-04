@@ -15,8 +15,10 @@
  */
 
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -91,7 +93,7 @@ namespace Jolt.Net
         {
             if (parseArg)
             {
-                if (obj.Type == JsonNodeType.String)
+                if (obj.GetNodeKind() == JsonValueKind.String)
                 {
                     string arg = obj.ToString();
                     if (arg.Length == 0)

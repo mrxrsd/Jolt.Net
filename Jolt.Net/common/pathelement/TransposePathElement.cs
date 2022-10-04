@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+using Jolt.Net.utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Jolt.Net
@@ -225,19 +227,19 @@ namespace Jolt.Net
             if (data != null)
             {
                 // Coerce a number into a string
-                if (data.Type == JsonNodeType.Integer)
+                if (data.GetNodeKind() == JsonValueKind.Integer)
                 {
                     // the idea here being we are looking for an array index value
                     return data.ToString();
                 }
 
                 // Coerce a boolean into a string
-                if (data.Type == JsonNodeType.Boolean)
+                if (data.GetNodeKind() == JsonValueKind.Boolean)
                 {
                     return data.Value<bool>() ? "true" : "false";
                 }
 
-                if (data.Type == JsonNodeType.String)
+                if (data.GetNodeKind() == JsonValueKind.String)
                 {
                     return data.ToString();
                 }
